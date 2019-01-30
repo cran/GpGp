@@ -53,48 +53,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// vecchia_loglik_grouped
-NumericVector vecchia_loglik_grouped(NumericVector covparms, StringVector covfun_name, NumericVector y, NumericMatrix locs, List NNlist);
-RcppExport SEXP _GpGp_vecchia_loglik_grouped(SEXP covparmsSEXP, SEXP covfun_nameSEXP, SEXP ySEXP, SEXP locsSEXP, SEXP NNlistSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type covfun_name(covfun_nameSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
-    Rcpp::traits::input_parameter< List >::type NNlist(NNlistSEXP);
-    rcpp_result_gen = Rcpp::wrap(vecchia_loglik_grouped(covparms, covfun_name, y, locs, NNlist));
-    return rcpp_result_gen;
-END_RCPP
-}
-// vecchia_Linv_grouped
-NumericVector vecchia_Linv_grouped(NumericVector covparms, StringVector covfun_name, NumericMatrix locs, List NNlist);
-RcppExport SEXP _GpGp_vecchia_Linv_grouped(SEXP covparmsSEXP, SEXP covfun_nameSEXP, SEXP locsSEXP, SEXP NNlistSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type covfun_name(covfun_nameSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
-    Rcpp::traits::input_parameter< List >::type NNlist(NNlistSEXP);
-    rcpp_result_gen = Rcpp::wrap(vecchia_Linv_grouped(covparms, covfun_name, locs, NNlist));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Linv_mult_grouped
-NumericVector Linv_mult_grouped(NumericVector Linv, NumericVector z, List NNlist);
-RcppExport SEXP _GpGp_Linv_mult_grouped(SEXP LinvSEXP, SEXP zSEXP, SEXP NNlistSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type Linv(LinvSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
-    Rcpp::traits::input_parameter< List >::type NNlist(NNlistSEXP);
-    rcpp_result_gen = Rcpp::wrap(Linv_mult_grouped(Linv, z, NNlist));
-    return rcpp_result_gen;
-END_RCPP
-}
 // vecchia_loglik
 NumericVector vecchia_loglik(NumericVector covparms, StringVector covfun_name, NumericVector y, const NumericMatrix locs, IntegerMatrix NNarray);
 RcppExport SEXP _GpGp_vecchia_loglik(SEXP covparmsSEXP, SEXP covfun_nameSEXP, SEXP ySEXP, SEXP locsSEXP, SEXP NNarraySEXP) {
@@ -150,19 +108,61 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// vecchia_loglik_grouped
+NumericVector vecchia_loglik_grouped(NumericVector covparms, StringVector covfun_name, NumericVector y, NumericMatrix locs, List NNlist);
+RcppExport SEXP _GpGp_vecchia_loglik_grouped(SEXP covparmsSEXP, SEXP covfun_nameSEXP, SEXP ySEXP, SEXP locsSEXP, SEXP NNlistSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type covfun_name(covfun_nameSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    Rcpp::traits::input_parameter< List >::type NNlist(NNlistSEXP);
+    rcpp_result_gen = Rcpp::wrap(vecchia_loglik_grouped(covparms, covfun_name, y, locs, NNlist));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vecchia_Linv_grouped
+NumericVector vecchia_Linv_grouped(NumericVector covparms, StringVector covfun_name, NumericMatrix locs, List NNlist);
+RcppExport SEXP _GpGp_vecchia_Linv_grouped(SEXP covparmsSEXP, SEXP covfun_nameSEXP, SEXP locsSEXP, SEXP NNlistSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type covfun_name(covfun_nameSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    Rcpp::traits::input_parameter< List >::type NNlist(NNlistSEXP);
+    rcpp_result_gen = Rcpp::wrap(vecchia_Linv_grouped(covparms, covfun_name, locs, NNlist));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Linv_mult_grouped
+NumericVector Linv_mult_grouped(NumericVector Linv, NumericVector z, List NNlist);
+RcppExport SEXP _GpGp_Linv_mult_grouped(SEXP LinvSEXP, SEXP zSEXP, SEXP NNlistSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type Linv(LinvSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< List >::type NNlist(NNlistSEXP);
+    rcpp_result_gen = Rcpp::wrap(Linv_mult_grouped(Linv, z, NNlist));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_GpGp_matern_isotropic", (DL_FUNC) &_GpGp_matern_isotropic, 2},
     {"_GpGp_matern_sphere", (DL_FUNC) &_GpGp_matern_sphere, 2},
     {"_GpGp_matern_space_time", (DL_FUNC) &_GpGp_matern_space_time, 2},
     {"_GpGp_matern_sphere_time", (DL_FUNC) &_GpGp_matern_sphere_time, 2},
-    {"_GpGp_vecchia_loglik_grouped", (DL_FUNC) &_GpGp_vecchia_loglik_grouped, 5},
-    {"_GpGp_vecchia_Linv_grouped", (DL_FUNC) &_GpGp_vecchia_Linv_grouped, 4},
-    {"_GpGp_Linv_mult_grouped", (DL_FUNC) &_GpGp_Linv_mult_grouped, 3},
     {"_GpGp_vecchia_loglik", (DL_FUNC) &_GpGp_vecchia_loglik, 5},
     {"_GpGp_vecchia_Linv", (DL_FUNC) &_GpGp_vecchia_Linv, 4},
     {"_GpGp_Linv_mult", (DL_FUNC) &_GpGp_Linv_mult, 3},
     {"_GpGp_L_mult", (DL_FUNC) &_GpGp_L_mult, 3},
+    {"_GpGp_vecchia_loglik_grouped", (DL_FUNC) &_GpGp_vecchia_loglik_grouped, 5},
+    {"_GpGp_vecchia_Linv_grouped", (DL_FUNC) &_GpGp_vecchia_Linv_grouped, 4},
+    {"_GpGp_Linv_mult_grouped", (DL_FUNC) &_GpGp_Linv_mult_grouped, 3},
     {NULL, NULL, 0}
 };
 

@@ -1,8 +1,8 @@
 Package: GpGp
 Type: Package
 Title: Fast Gaussian Process Computation Using Vecchia's Approximation
-Version: 0.1.0
-Date: 2018-02-18
+Version: 0.1.1
+Date: 2019-01-27
 Authors@R: c(
     person("Joseph", "Guinness", email = "joeguinness@gmail.com", role = c("aut", "cre")),
     person("Matthias", "Katzfuss", email = "katzfuss@gmail.com", role = "aut" ) )
@@ -21,14 +21,14 @@ Description: Functions for reordering
 Depends: R (>= 2.10)
 License: MIT + file LICENSE
 Imports: Rcpp (>= 0.12.13), FNN
-Suggests: fields, knitr, rmarkdown, testthat
+Suggests: fields, knitr, rmarkdown, testthat, maps, maptools
 LinkingTo: Rcpp
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 VignetteBuilder: knitr
 LazyData: true
 NeedsCompilation: yes
-Packaged: 2018-02-18 21:48:51 UTC; guinness
+Packaged: 2019-01-29 14:15:23 UTC; guinness
 Author: Joseph Guinness [aut, cre],
   Matthias Katzfuss [aut]
 Repository: CRAN
-Date/Publication: 2018-02-19 10:14:03 UTC
+Date/Publication: 2019-01-30 09:20:03 UTC

@@ -11,17 +11,17 @@ head(jason3)
 lat       <- jason3$lat
 lon       <- jason3$lon
 windspeed <- jason3$windspeed
-time      <- jason3$time
+time      <- jason3$time/3600
 n         <- length(windspeed)
 
 ## ---- fig.width=8, fig.height=4------------------------------------------
 # plot of data from first 6 hours
 par(mar=c(4,4,1,1))
-inds <- time < 6*3600
+inds <- time < 6
 fields::quilt.plot(lon[inds],lat[inds],windspeed[inds],
     nx=400,ny=200,xlab="Lon",ylab="Lat",legend.lab = "windspeed (m/s)")
 # plot of data from first day
-inds <- time < 24*3600
+inds <- time < 24
 fields::quilt.plot(lon[inds],lat[inds],windspeed[inds],
     nx=400,ny=200,xlab="Lon",ylab="Lat",legend.lab = "windspeed (m/s)")
 # plot of all data
