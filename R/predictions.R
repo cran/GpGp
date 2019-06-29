@@ -8,6 +8,7 @@
 #' an approximation for the inverse Cholesky of the covariance matrix
 #' is computed, and standard formulas are applied to obtain
 #' the conditional expectation.
+#' @param fit GpGp_fit object, the result of \code{\link{fit_model}}
 #' @param covparms Covariance parameters
 #' @param covfun_name Name of covariance function
 #' @param y_obs Observations associated with locs_obs
@@ -20,9 +21,19 @@
 #' @param reorder TRUE/FALSE for whether reordering should be done. This should
 #' generally be kept at TRUE, unless testing out the effect of
 #' reordering.
+#' @param st_scale amount by which to scale the spatial and temporal
+#' dimensions for the purpose of selecting neighbors. We recommend setting
+#' this manually when using a spatial-temporal covariance function. When 
+#' \code{lonlat = TRUE}, spatial scale is in radians (earth radius = 1).
+#' @details We can specify either a GpGp_fit object (the result of 
+#' \code{\link{fit_model}}), OR manually enter the covariance function and
+#' parameters, the observations, observation locations, and design matrix. We 
+#' must specify the prediction locations and the prediction design matrix.
 #' @export
-predictions <- function(covparms, covfun_name = "matern_isotropic", y_obs, 
-    locs_obs, locs_pred, X_obs, X_pred, beta, m = 60, reorder = TRUE){
+predictions <- function(fit = NULL, locs_pred, X_pred, 
+    y_obs = fit$y, locs_obs = fit$locs, X_obs = fit$X, beta = fit$betahat,    
+    covparms = fit$covparms, covfun_name = fit$covfun_name, 
+    m = 60, reorder = TRUE, st_scale = NULL){
     
     n_obs <- nrow(locs_obs)
     n_pred <- nrow(locs_pred)
@@ -37,25 +48,30 @@ predictions <- function(covparms, covfun_name = "matern_isotropic", y_obs,
     }
 
     # reorder stuff
-    Xord_obs  <- as.matrix( X_obs[ord1,] )
-    Xord_pred <- as.matrix( X_pred[ord2,])
+    X_obs <- as.matrix(X_obs)
+    X_pred <- as.matrix(X_pred)
+    Xord_obs  <- X_obs[ord1,,drop=FALSE]
+    Xord_pred <- X_pred[ord2,,drop=FALSE]
     yord_obs  <- y_obs[ord1]
     
     
     # put all coordinates together
-    locs_all <- rbind( locs_obs[ord1,], locs_pred[ord2,] )
+    locs_all <- rbind( locs_obs[ord1,,drop=FALSE], locs_pred[ord2,,drop=FALSE] )
     inds1 <- 1:n_obs
     inds2 <- (n_obs+1):(n_obs+n_pred)
     
     # figure out if lonlat or not
-    if( covfun_name == "matern_sphere" || covfun_name == "matern_sphere_time" ){
-        lonlat <- TRUE
-    } else {
-        lonlat <- FALSE
-    }
+    lonlat <- get_linkfun(covfun_name)$lonlat
+    space_time <- get_linkfun(covfun_name)$space_time
     
     # get nearest neighbor array (in space only)
-    NNarray_all <- find_ordered_nn(locs_all,m=m,lonlat = lonlat)
+    if(space_time){
+        dd <- ncol(locs_all)-1
+    } else {
+        dd <- ncol(locs_all)
+    }
+    #NNarray_all <- find_ordered_nn(locs_all[,1:dd,drop=FALSE],m=m,lonlat = lonlat)
+    NNarray_all <- find_ordered_nn(locs_all,m=m,lonlat = lonlat,st_scale=st_scale)
     
     # get entries of Linv for obs locations and pred locations
     Linv_all <- vecchia_Linv(covparms,covfun_name,locs_all,NNarray_all)
@@ -78,6 +94,7 @@ predictions <- function(covparms, covfun_name = "matern_isotropic", y_obs,
 #' an approximation for the inverse Cholesky of the covariance matrix
 #' is computed, and standard formulas are applied to obtain
 #' a conditional simulation.
+#' @param fit GpGp_fit object, the result of \code{\link{fit_model}}
 #' @param covparms Covariance parameters
 #' @param covfun_name Name of covariance function
 #' @param y_obs Observations associated with locs_obs
@@ -88,14 +105,24 @@ predictions <- function(covparms, covfun_name = "matern_isotropic", y_obs,
 #' @param beta Linear mean parameters
 #' @param m Number of nearest neighbors to use. Larger \code{m} gives
 #' better approximations.
+#' @param st_scale amount by which to scale the spatial and temporal
+#' dimensions for the purpose of selecting neighbors. We recommend setting
+#' this manually when using a spatial-temporal covariance function. When 
+#' \code{lonlat = TRUE}, spatial scale is in radians (earth radius = 1).
 #' @param nsims Number of conditional simulations to return.
 #' @param reorder TRUE/FALSE for whether reordering should be done. This should
 #' generally be kept at TRUE, unless testing out the effect of
 #' reordering.
+#' @details We can specify either a GpGp_fit object (the result of 
+#' \code{\link{fit_model}}), OR manually enter the covariance function and
+#' parameters, the observations, observation locations, and design matrix. We 
+#' must specify the prediction locations and the prediction design matrix.
 #' @export
-cond_sim <- function(covparms, covfun_name = "matern_isotropic", y_obs, 
-    locs_obs, locs_pred, X_obs, X_pred, beta, m = 60, nsims = 1, reorder = TRUE){
-    
+cond_sim <- function(fit = NULL, locs_pred, X_pred, 
+    y_obs = fit$y, locs_obs = fit$locs, X_obs = fit$X, beta = fit$betahat,    
+    covparms = fit$covparms, covfun_name = fit$covfun_name, 
+    m = 60, reorder = TRUE, st_scale = NULL, nsims = 1 ){
+
     n_obs <- nrow(locs_obs)
     n_pred <- nrow(locs_pred)
     
@@ -104,8 +131,10 @@ cond_sim <- function(covparms, covfun_name = "matern_isotropic", y_obs,
     ord2 <- order_maxmin(locs_pred)
 
     # reorder stuff
-    Xord_obs  <- as.matrix( X_obs[ord1,] )
-    Xord_pred <- as.matrix( X_pred[ord2,])
+    X_obs <- as.matrix(X_obs)
+    X_pred <- as.matrix(X_pred)
+    Xord_obs  <- X_obs[ord1,,drop=FALSE]
+    Xord_pred <- X_pred[ord2,,drop=FALSE]
     yord_obs  <- y_obs[ord1]
 
     # put all coordinates together
@@ -114,15 +143,12 @@ cond_sim <- function(covparms, covfun_name = "matern_isotropic", y_obs,
     inds2 <- (n_obs+1):(n_obs+n_pred)
     
     # figure out if lonlat or not
-    if( covfun_name == "matern_sphere" || covfun_name == "matern_sphere_time" ){
-        lonlat <- TRUE
-    } else {
-        lonlat <- FALSE
-    }
+    lonlat <- get_linkfun(covfun_name)$lonlat
     
     # get nearest neighbor array (in space only)
-    NNarray_all <- find_ordered_nn(locs_all,m=m,lonlat = lonlat)
-    
+    #NNarray_all <- find_ordered_nn(locs_all,m=m,lonlat = lonlat)
+    NNarray_all <- find_ordered_nn(locs_all,m=m,lonlat = lonlat,st_scale=st_scale)
+
     # get entries of Linv for obs locations and pred locations
     Linv_all <- vecchia_Linv(covparms,covfun_name,locs_all,NNarray_all)
     

@@ -5,68 +5,93 @@
 \title{Estimate mean and covariance parameters}
 \usage{
 fit_model(y, locs, X = NULL, covfun_name = "matern_isotropic",
-  silent = FALSE, group = TRUE, reorder = TRUE)
+  NNarray = NULL, start_parms = NULL, silent = FALSE, group = TRUE,
+  reorder = TRUE, m_seq = c(10, 30), st_scale = NULL,
+  convtol = 1e-04)
 }
 \arguments{
 \item{y}{response vector}
 
 \item{locs}{matrix of locations. Each row is a single spatial or spatial-temporal
-location. If using one of the "matern_sphere" covariance functions,
-the locations should be longitudes and latitudes (in that order) in degrees.}
+location. If using one of the covariance functions for data on a sphere,
+the first column should be longitudes (-180,180) and the second column
+should be latitudes (-90,90). If using a spatial-temporal covariance function,
+the last column should contain the times.}
 
 \item{X}{design matrix. Each row contains covariates for the corresponding
-observation in \code{y}. If not specified, the function sets \code{X} to be a 
+observation in \code{y}. If not specified, the function sets \code{X} to be a
 matrix with a single column of ones, that is, a constant mean function.}
 
-\item{covfun_name}{string name of a covariance function. Currently supported
-are "matern_isotropic", "matern_sphere", and "matern_sphere_time".}
+\item{covfun_name}{string name of a covariance function. See \code{\link{GpGp}}
+for information about supported covariance funtions.}
+
+\item{NNarray}{Optionally specified array of nearest neighbor indices, usually
+from the output of \code{\link{find_ordered_nn}}. If \code{NULL}, fit_model will
+compute the nearest neighbors. We recommend that the user
+not specify this unless there is a good reason to (e.g. if doing a comparison
+study where one wants to control \code{NNarray} across different approximations).}
+
+\item{start_parms}{Optionally specified starting values for parameters. If \code{NULL},
+fit_model will select default starting values.}
 
 \item{silent}{TRUE/FALSE for whether to print some information during fitting.}
 
-\item{group}{TRUE/FALSE for whether to use the grouped version of 
-the approximation (Guinness, 2018) or not.  The grouped version 
-is used by default.}
+\item{group}{TRUE/FALSE for whether to use the grouped version of
+the approximation (Guinness, 2018) or not.  The grouped version
+is used by default and is always recommended.}
 
 \item{reorder}{TRUE/FALSE indicating whether maxmin ordering should be used
-(TRUE) or whether no reordering should be done before fitting (FALSE).}
+(TRUE) or whether no reordering should be done before fitting (FALSE). If you want
+to use a customized reordering, then manually reorder \code{y}, \code{locs}, and \code{X}, 
+and then set \code{reorder} to \code{FALSE}. A random reordering is used
+when \code{nrow(locs) > 1e5}.}
+
+\item{m_seq}{Sequence of values for number of neighbors. By default, a 10-neighbor
+approximation is maximized, then a 30-neighbor approximation is maximized using the
+10 neighbor estimates as starting values. However, one can specify any sequence 
+of numbers of neighbors, e.g. \code{m_seq = c(10,30,60,90)}.}
+
+\item{st_scale}{Scaling for spatial and temporal ranges. Only applicable for
+spatial-temporal models, where it is used in distance
+calculations when selecting neighbors. \code{st_scale} must be specified
+when \code{covfun_name} is a spatial-temporal covariance. See Argo vignette for an example.}
+
+\item{convtol}{Tolerance for exiting the optimization. Fisher scoring is stopped
+when the dot product between the step and the gradient is less than \code{convtol}.}
 }
 \value{
-A list object containing covariance parameter estimates,
-mean parameter estimates, and covariance matrix for mean parameter estimates.
+An object of class \code{GpGp_fit}, which is a list containing 
+covariance parameter estimates, regression coefficients, 
+covariance matrix for mean parameter estimates, as well as some other
+information relevant to the model fit.
 }
 \description{
-Given a response, set of locations, (optionally) a design matrix, 
+Given a response, set of locations, (optionally) a design matrix,
 and a specified covariance function, return the maximum
-approximate likelihood estimates, using Vecchia's 
-likelihood approximation.
+Vecchia likelihood estimates, obtained with a Fisher scoring algorithm.
 }
 \details{
-The \code{fit_model} is a user-friendly model fitting function
-that automatically performs many of the auxiliary tasks needed for 
+\code{fit_model} is a user-friendly model fitting function
+that automatically performs many of the auxiliary tasks needed for
 using Vecchia's approximation, including reordering, computing
-nearest neighbors, grouping, and optimization. Optimization proceeds
-in several steps, using increasingly accurate versions of the approximation. 
-The first step using 5 neighbors, then 15 neighbors, and the last step
-uses 30 neighbors. The actual number of neighbors in the grouped
-version is guaranteed to be larger, though depends on the ordering and
-the configuration of the locations. We recommend always using
-\code{group = TRUE} since the grouping is guaranteed to improve
-the approximation.
+nearest neighbors, grouping, and optimization. The likelihoods use a small
+penalty on small nuggets, large spatial variances, and small smoothness parameter.
 
-The Jason-3 windspeed vignette is a useful source for a 
-use-case of the \code{fit_model} function for data on sphere. The example below
+The Jason-3 windspeed vignette and the Argo temperature vignette are useful sources for a
+use-cases of the \code{fit_model} function for data on sphere. The example below
 shows a very small example with a simulated dataset in 2d.
 }
 \examples{
-n1 <- 10
-n2 <- 10
+n1 <- 20
+n2 <- 20
 n <- n1*n2
 locs <- as.matrix( expand.grid( (1:n1)/n1, (1:n2)/n2 ) )
 covparms <- c(2,0.1,1/2,0)
 y <- 7 + fast_Gp_sim(covparms, "matern_isotropic", locs)
 X <- as.matrix( rep(1,n) )
-fit <- fit_model(y, locs, X, "matern_isotropic")
-fit
+## not run
+# fit <- fit_model(y, locs, X, "matern_isotropic")
+# fit
 
 
 }

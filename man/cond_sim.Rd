@@ -4,38 +4,53 @@
 \alias{cond_sim}
 \title{Conditional Simulation using Vecchia's approximation}
 \usage{
-cond_sim(covparms, covfun_name = "matern_isotropic", y_obs, locs_obs,
-  locs_pred, X_obs, X_pred, beta, m = 60, nsims = 1, reorder = TRUE)
+cond_sim(fit = NULL, locs_pred, X_pred, y_obs = fit$y,
+  locs_obs = fit$locs, X_obs = fit$X, beta = fit$betahat,
+  covparms = fit$covparms, covfun_name = fit$covfun_name, m = 60,
+  reorder = TRUE, st_scale = NULL, nsims = 1)
 }
 \arguments{
-\item{covparms}{Covariance parameters}
+\item{fit}{GpGp_fit object, the result of \code{\link{fit_model}}}
 
-\item{covfun_name}{Name of covariance function}
+\item{locs_pred}{prediction locations}
+
+\item{X_pred}{Design matrix for predictions}
 
 \item{y_obs}{Observations associated with locs_obs}
 
 \item{locs_obs}{observation locations}
 
-\item{locs_pred}{prediction locations}
-
 \item{X_obs}{Design matrix for observations}
 
-\item{X_pred}{Design matrix for predictions}
-
 \item{beta}{Linear mean parameters}
+
+\item{covparms}{Covariance parameters}
+
+\item{covfun_name}{Name of covariance function}
 
 \item{m}{Number of nearest neighbors to use. Larger \code{m} gives
 better approximations.}
 
-\item{nsims}{Number of conditional simulations to return.}
-
 \item{reorder}{TRUE/FALSE for whether reordering should be done. This should
 generally be kept at TRUE, unless testing out the effect of
 reordering.}
+
+\item{st_scale}{amount by which to scale the spatial and temporal
+dimensions for the purpose of selecting neighbors. We recommend setting
+this manually when using a spatial-temporal covariance function. When 
+\code{lonlat = TRUE}, spatial scale is in radians (earth radius = 1).}
+
+\item{nsims}{Number of conditional simulations to return.}
 }
 \description{
 With the prediction locations ordered after the observation locations,
 an approximation for the inverse Cholesky of the covariance matrix
 is computed, and standard formulas are applied to obtain
 a conditional simulation.
+}
+\details{
+We can specify either a GpGp_fit object (the result of 
+\code{\link{fit_model}}), OR manually enter the covariance function and
+parameters, the observations, observation locations, and design matrix. We 
+must specify the prediction locations and the prediction design matrix.
 }

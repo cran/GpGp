@@ -10,17 +10,10 @@ fast_Gp_sim(covparms, covfun_name = "matern_isotropic", locs, m = 30)
 \item{covparms}{A vector of covariance parameters appropriate
 for the specified covariance function}
 
-\item{covfun_name}{One of "matern_isotropic", "matern_space_time", "matern_sphere", 
-or "matern_sphere_time".
-"matern_isotropic" and "matern_sphere" have four covariance parameters, 
-(variance, range, smoothness, nugget), while "matern_space_time" and 
-"matern_sphere_time" have five,
-(variance, spatial range, temporal range, smoothness, nugget). 
-For more details, see the documentation 
-for each of the covariance functions by typing, for example, ?matern_isotropic
-or ?matern_sphere_time.}
+\item{covfun_name}{See \code{\link{GpGp}} for information about covariance
+functions.}
 
-\item{locs}{matrix of locations. Row \code{i} of locs specifies the location
+\item{locs}{matrix of locations. Row \code{i} of \code{locs} specifies the location
 of element \code{i} of \code{y}, and so the length of \code{y} should equal
 the number of rows of \code{locs}.}
 
@@ -36,7 +29,7 @@ then the simulation is produced by solving a linear system
 with a vector of uncorrelated standard normals
 }
 \examples{
-locs <- as.matrix( expand.grid( (1:100)/100, (1:100)/100 ) )
+locs <- as.matrix( expand.grid( (1:50)/50, (1:50)/50 ) )
 y <- fast_Gp_sim(c(4,0.2,0.5,0), "matern_isotropic",  locs, 30 )
-fields::image.plot( matrix(y,100,100) )
+fields::image.plot( matrix(y,50,50) )
 }

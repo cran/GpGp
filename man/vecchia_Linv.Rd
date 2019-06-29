@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{vecchia_Linv}
 \alias{vecchia_Linv}
-\title{Inverse Cholesky factor implied by Vecchia's approximation}
+\title{Entries of inverse Cholesky approximation}
 \usage{
 vecchia_Linv(covparms, covfun_name, locs, NNarray)
 }
@@ -10,35 +10,28 @@ vecchia_Linv(covparms, covfun_name, locs, NNarray)
 \item{covparms}{A vector of covariance parameters appropriate
 for the specified covariance function}
 
-\item{covfun_name}{One of "matern_isotropic", "matern_space_time", "matern_sphere", 
-or "matern_sphere_time".
-"matern_isotropic" and "matern_sphere" have four covariance parameters, 
-(variance, range, smoothness, nugget), while "matern_space_time" and 
-"matern_sphere_time" have five,
-(variance, spatial range, temporal range, smoothness, nugget). 
-For more details, see the documentation 
-for each of the covariance functions by typing, for example, ?matern_isotropic
-or ?matern_sphere_time.}
+\item{covfun_name}{See \code{\link{GpGp}} for information about covariance
+functions.}
 
-\item{locs}{matrix of locations. Row \code{i} of locs specifies the location
+\item{locs}{matrix of locations. Row \code{i} of \code{locs} specifies the location
 of element \code{i} of \code{y}, and so the length of \code{y} should equal
 the number of rows of \code{locs}.}
 
-\item{NNarray}{A matrix of indices, usually the output from \code{\link{find_ordered_nn}}. 
+\item{NNarray}{A matrix of indices, usually the output from \code{\link{find_ordered_nn}}.
 Row \code{i} contains the indices
 of the observations that observation \code{i} conditions on. By convention,
 the first element of row \code{i} is \code{i}.}
 }
 \value{
-matrix containing entries of sparse approximation to inverse Cholesky
+matrix containing entries of inverse Cholesky
 }
 \description{
-This function returns the entries of the sparse approximation to 
-the Cholesky factor implied by Vecchia's (1988) approximation to the Gaussian
-loglikelihood. The approximation modifies the ordered conditional
-specification of the joint density; rather than each term in the product
-conditioning on all previous observations, each term conditions on
-a small subset of previous observations.
+This function returns the entries of the inverse Cholesky
+factor of the covariance matrix implied by Vecchia's approximation.
+For return matrix \code{Linv}, \code{Linv[i,]} contains 
+the non-zero entries of row \code{i} of
+the inverse Cholesky matrix. The columns of the non-zero entries
+are specified in \code{NNarray[i,]}.
 }
 \examples{
 n1 <- 40
@@ -46,7 +39,6 @@ n2 <- 40
 n <- n1*n2
 locs <- as.matrix( expand.grid( (1:n1)/n1, (1:n2)/n2 ) )
 covparms <- c(2, 0.2, 0.75, 0)
-ord <- order_maxmin(locs)
 NNarray <- find_ordered_nn(locs,20)
-Linv <- vecchia_Linv( covparms, "matern_isotropic", locs, NNarray )
+Linv <- vecchia_Linv(covparms, "matern_isotropic", locs, NNarray)
 }
