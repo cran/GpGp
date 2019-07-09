@@ -1,7 +1,7 @@
-08007af53ab344580fcd2c8c5a1aaf92 *DESCRIPTION
+cad14d95bb985d67f659afc07d9aca13 *DESCRIPTION
 fbf270ee9b57f3c5e72a9ae7127c19cb *LICENSE
 dda14d48a22c5d8ccb507ea16f15be12 *NAMESPACE
-06853d02f075e42a0f2c41f3cbb155e9 *NEWS.md
+4ab50767dabf640af1a5032efc48d846 *NEWS.md
 35c5a5aa21e92dd25af6c7e50c78f0ee *R/GpGp.R
 0bc748b107d414e620a5e7cac34b3357 *R/RcppExports.R
 09bc124d9673c8776e787b7e27eac55b *R/Rcpp_doc.R
@@ -80,7 +80,7 @@ f002e9b4c8fd2c1c85058461bdb592af *man/vecchia_profbeta_loglik_grad_info.Rd
 2a6f9e9e044a78154d3cfda5936d6f48 *src/Makevars
 2a6f9e9e044a78154d3cfda5936d6f48 *src/Makevars.win
 ceff9de08a51bade99090701fc7c0881 *src/RcppExports.cpp
-b66e4e624be1225fc762ce38f499076c *src/basis.h
+981a4595937f6331a680010626885f88 *src/basis.h
 8fdc660e1746ffe3a35bfa04d2ed7276 *src/covmatrix_funs.h
 f8d7f536ff98563c4875036a5c0f05cb *src/covmatrix_funs_01.h
 797db64b9a5156b5ec087e548096b837 *src/covmatrix_funs_02.h
@@ -92,7 +92,7 @@ e419b621d7ae438dbe1fd979024c15c7 *src/covmatrix_funs_04.h
 c3117e0d2e7435ebb2475efffb0b3bdb *src/covmatrix_funs_08.h
 2c33e365bd5c204810640137e8cd4361 *src/matrix_mult.cpp
 b5dcff36e4cace30f84da04990d3d6d6 *src/onepass.h
-0b26503c366372567f278681b43552dd *src/vecchia_loglik_grad_info.cpp
+8844ddf5a9ec93c55c4e45c505e94762 *src/vecchia_loglik_grad_info.cpp
 68a68d938df9d66effbc27b914e77054 *tests/testthat.R
 56019e4c247c3b810335400bb4d18187 *tests/testthat/test_covfuns.R
 28f23689196a3f30aed7b41c90b377cb *tests/testthat/test_fisher.R
