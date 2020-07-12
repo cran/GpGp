@@ -34,16 +34,15 @@ condition_number <- function(info){
 #' @param link link function for parameters (used for printing)
 #' @param silent TRUE/FALSE for suppressing output
 #' @param convtol convergence tolerance on step dot grad
-fisher_scoring <- function( likfun, start_parms, link, silent = FALSE, convtol = 1e-4 ){
-    
-    # link functions passed for printing purposes
-    maxit <- 40
+#' @param max_iter maximum number of Fisher scoring iterations
+fisher_scoring <- function( likfun, start_parms, link, 
+    silent = FALSE, convtol = 1e-4, max_iter = 40 ){
     
     # function for checking wolfe conditions
     wolfe_check <- function(likobj0,likobj1,logparms,step,both){
         c1 <- 1e-4
         c2 <- 0.9
-        tol <- 1e-6
+        tol <- 0.1
         ll0 <- likobj0$loglik
         gr0 <- likobj0$grad
         ll1 <- likobj1$loglik
@@ -85,19 +84,16 @@ fisher_scoring <- function( likfun, start_parms, link, silent = FALSE, convtol =
         cat("\n\n")
     }
     
-    for(j in 1:maxit){
+    for(j in 1:max_iter){
         
         likobj0 <- likobj
         
-        # if condition number of info matrix large, then regularize
-        tol <- 1e-8
+        # if condition number of info matrix large, 
+        # then gradient descent
+        tol <- 1e-4
         if (condition_number(info) > 1 / tol) {
             if (!silent) cat("Cond # of info matrix > 1/tol \n")
-            eiginfo <- eigen(info)
-            whichsmall <- which( eiginfo$values / max(eiginfo$values) < tol )
-            eiginfo$values[whichsmall] <- tol*max(eiginfo$values)
-            info <-
-                eiginfo$vectors %*% diag(eiginfo$values) %*% t(eiginfo$vectors)
+            info <- 1.0*max(likobj0$info)*diag(nrow(likobj0$info))
         }
 
         # calculate fisher step 
@@ -105,7 +101,7 @@ fisher_scoring <- function( likfun, start_parms, link, silent = FALSE, convtol =
         
         # if step size large, then make it smaller
         if (mean(step^2) > 1) {
-            if(!silent) cat("@@\n")
+            if(!silent) cat("##\n")
             step <- step/sqrt(mean(step^2))
         }
         
@@ -129,20 +125,17 @@ fisher_scoring <- function( likfun, start_parms, link, silent = FALSE, convtol =
         cnt <- 1
         no_decrease <- FALSE
         both <- FALSE
+        mult <- 1.0
         while (!wolfe_check(likobj0,likobj,logparms,newlogparms-logparms,both) &&
                 !no_decrease ){
-            mult <- 0.5 
-            step <- mult * step
-            if (cnt == 6) { # switch to gradient
-                if(!silent) cat("**\n") 
-                step <- - 0.1*grad/sqrt(sum(grad^2)) 
-                both <- FALSE
-            }
+            info <- 1/mult*max(likobj$info)*diag(nrow(likobj0$info))
+            step <- -solve(info,grad)
             if(!silent) cat("**\n") 
             if ( sqrt(sum(step^2)) < 1e-4 ){ no_decrease <- TRUE }  # maybe we should throw error here?
             newlogparms <- logparms + step
             likobj <- likfun(newlogparms)
             cnt <- cnt + 1
+            mult <- mult*0.5
         }
         stepgrad <- c(crossprod(step,grad))
         
@@ -178,13 +171,15 @@ fisher_scoring <- function( likfun, start_parms, link, silent = FALSE, convtol =
 
     ret <- list(
         covparms = link(logparms), 
+        logparms = logparms,
         betahat = betahat, 
         sebeta = sebeta,
         betacov = betacov,
         tbeta = tbeta,
         loglik = loglik,
         no_decrease = no_decrease,
-        grad = likobj$grad
+        grad = likobj$grad,
+        conv = ( abs(stepgrad) < convtol || no_decrease )
     )
     return(ret)
 }

@@ -66,6 +66,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// matern15_isotropic
+arma::mat matern15_isotropic(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_matern15_isotropic(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(matern15_isotropic(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// d_matern15_isotropic
+arma::cube d_matern15_isotropic(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_d_matern15_isotropic(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_matern15_isotropic(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // matern_anisotropic2D
 arma::mat matern_anisotropic2D(NumericVector covparms, NumericMatrix locs);
 RcppExport SEXP _GpGp_matern_anisotropic2D(SEXP covparmsSEXP, SEXP locsSEXP) {
@@ -498,6 +522,174 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// matern15_scaledim
+arma::mat matern15_scaledim(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_matern15_scaledim(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(matern15_scaledim(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// d_matern15_scaledim
+arma::cube d_matern15_scaledim(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_d_matern15_scaledim(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_matern15_scaledim(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// matern25_isotropic
+arma::mat matern25_isotropic(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_matern25_isotropic(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(matern25_isotropic(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// d_matern25_isotropic
+arma::cube d_matern25_isotropic(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_d_matern25_isotropic(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_matern25_isotropic(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// matern25_scaledim
+arma::mat matern25_scaledim(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_matern25_scaledim(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(matern25_scaledim(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// d_matern25_scaledim
+arma::cube d_matern25_scaledim(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_d_matern25_scaledim(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_matern25_scaledim(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// matern35_isotropic
+arma::mat matern35_isotropic(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_matern35_isotropic(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(matern35_isotropic(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// d_matern35_isotropic
+arma::cube d_matern35_isotropic(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_d_matern35_isotropic(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_matern35_isotropic(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// matern35_scaledim
+arma::mat matern35_scaledim(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_matern35_scaledim(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(matern35_scaledim(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// d_matern35_scaledim
+arma::cube d_matern35_scaledim(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_d_matern35_scaledim(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_matern35_scaledim(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// matern45_isotropic
+arma::mat matern45_isotropic(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_matern45_isotropic(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(matern45_isotropic(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// d_matern45_isotropic
+arma::cube d_matern45_isotropic(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_d_matern45_isotropic(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_matern45_isotropic(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// matern45_scaledim
+arma::mat matern45_scaledim(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_matern45_scaledim(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(matern45_scaledim(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// d_matern45_scaledim
+arma::cube d_matern45_scaledim(NumericVector covparms, NumericMatrix locs);
+RcppExport SEXP _GpGp_d_matern45_scaledim(SEXP covparmsSEXP, SEXP locsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type covparms(covparmsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type locs(locsSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_matern45_scaledim(covparms, locs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // Linv_mult
 NumericVector Linv_mult(NumericMatrix Linv, NumericVector z, IntegerMatrix NNarray);
 RcppExport SEXP _GpGp_Linv_mult(SEXP LinvSEXP, SEXP zSEXP, SEXP NNarraySEXP) {
@@ -551,8 +743,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // vecchia_Linv
-NumericMatrix vecchia_Linv(NumericVector covparms, StringVector covfun_name, const NumericMatrix locs, IntegerMatrix NNarray);
-RcppExport SEXP _GpGp_vecchia_Linv(SEXP covparmsSEXP, SEXP covfun_nameSEXP, SEXP locsSEXP, SEXP NNarraySEXP) {
+NumericMatrix vecchia_Linv(NumericVector covparms, StringVector covfun_name, const NumericMatrix locs, IntegerMatrix NNarray, int start_ind);
+RcppExport SEXP _GpGp_vecchia_Linv(SEXP covparmsSEXP, SEXP covfun_nameSEXP, SEXP locsSEXP, SEXP NNarraySEXP, SEXP start_indSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -560,7 +752,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< StringVector >::type covfun_name(covfun_nameSEXP);
     Rcpp::traits::input_parameter< const NumericMatrix >::type locs(locsSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type NNarray(NNarraySEXP);
-    rcpp_result_gen = Rcpp::wrap(vecchia_Linv(covparms, covfun_name, locs, NNarray));
+    Rcpp::traits::input_parameter< int >::type start_ind(start_indSEXP);
+    rcpp_result_gen = Rcpp::wrap(vecchia_Linv(covparms, covfun_name, locs, NNarray, start_ind));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -665,6 +858,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_GpGp_d_exponential_isotropic", (DL_FUNC) &_GpGp_d_exponential_isotropic, 2},
     {"_GpGp_matern_isotropic", (DL_FUNC) &_GpGp_matern_isotropic, 2},
     {"_GpGp_d_matern_isotropic", (DL_FUNC) &_GpGp_d_matern_isotropic, 2},
+    {"_GpGp_matern15_isotropic", (DL_FUNC) &_GpGp_matern15_isotropic, 2},
+    {"_GpGp_d_matern15_isotropic", (DL_FUNC) &_GpGp_d_matern15_isotropic, 2},
     {"_GpGp_matern_anisotropic2D", (DL_FUNC) &_GpGp_matern_anisotropic2D, 2},
     {"_GpGp_d_matern_anisotropic2D", (DL_FUNC) &_GpGp_d_matern_anisotropic2D, 2},
     {"_GpGp_matern_anisotropic3D", (DL_FUNC) &_GpGp_matern_anisotropic3D, 2},
@@ -701,11 +896,25 @@ static const R_CallMethodDef CallEntries[] = {
     {"_GpGp_d_matern_nonstat_var", (DL_FUNC) &_GpGp_d_matern_nonstat_var, 2},
     {"_GpGp_exponential_nonstat_var", (DL_FUNC) &_GpGp_exponential_nonstat_var, 2},
     {"_GpGp_d_exponential_nonstat_var", (DL_FUNC) &_GpGp_d_exponential_nonstat_var, 2},
+    {"_GpGp_matern15_scaledim", (DL_FUNC) &_GpGp_matern15_scaledim, 2},
+    {"_GpGp_d_matern15_scaledim", (DL_FUNC) &_GpGp_d_matern15_scaledim, 2},
+    {"_GpGp_matern25_isotropic", (DL_FUNC) &_GpGp_matern25_isotropic, 2},
+    {"_GpGp_d_matern25_isotropic", (DL_FUNC) &_GpGp_d_matern25_isotropic, 2},
+    {"_GpGp_matern25_scaledim", (DL_FUNC) &_GpGp_matern25_scaledim, 2},
+    {"_GpGp_d_matern25_scaledim", (DL_FUNC) &_GpGp_d_matern25_scaledim, 2},
+    {"_GpGp_matern35_isotropic", (DL_FUNC) &_GpGp_matern35_isotropic, 2},
+    {"_GpGp_d_matern35_isotropic", (DL_FUNC) &_GpGp_d_matern35_isotropic, 2},
+    {"_GpGp_matern35_scaledim", (DL_FUNC) &_GpGp_matern35_scaledim, 2},
+    {"_GpGp_d_matern35_scaledim", (DL_FUNC) &_GpGp_d_matern35_scaledim, 2},
+    {"_GpGp_matern45_isotropic", (DL_FUNC) &_GpGp_matern45_isotropic, 2},
+    {"_GpGp_d_matern45_isotropic", (DL_FUNC) &_GpGp_d_matern45_isotropic, 2},
+    {"_GpGp_matern45_scaledim", (DL_FUNC) &_GpGp_matern45_scaledim, 2},
+    {"_GpGp_d_matern45_scaledim", (DL_FUNC) &_GpGp_d_matern45_scaledim, 2},
     {"_GpGp_Linv_mult", (DL_FUNC) &_GpGp_Linv_mult, 3},
     {"_GpGp_L_mult", (DL_FUNC) &_GpGp_L_mult, 3},
     {"_GpGp_Linv_t_mult", (DL_FUNC) &_GpGp_Linv_t_mult, 3},
     {"_GpGp_L_t_mult", (DL_FUNC) &_GpGp_L_t_mult, 3},
-    {"_GpGp_vecchia_Linv", (DL_FUNC) &_GpGp_vecchia_Linv, 4},
+    {"_GpGp_vecchia_Linv", (DL_FUNC) &_GpGp_vecchia_Linv, 5},
     {"_GpGp_vecchia_profbeta_loglik_grad_info", (DL_FUNC) &_GpGp_vecchia_profbeta_loglik_grad_info, 6},
     {"_GpGp_vecchia_profbeta_loglik", (DL_FUNC) &_GpGp_vecchia_profbeta_loglik, 6},
     {"_GpGp_vecchia_meanzero_loglik", (DL_FUNC) &_GpGp_vecchia_meanzero_loglik, 5},

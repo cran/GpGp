@@ -552,6 +552,8 @@ void synthesize_grouped(
 //' the inverse Cholesky matrix. The columns of the non-zero entries
 //' are specified in \code{NNarray[i,]}.
 //' @inheritParams vecchia_meanzero_loglik
+//' @param start_ind Compute entries of Linv only for rows \code{start_ind}
+//' until the last row. 
 //' @return matrix containing entries of inverse Cholesky
 //' @examples
 //' n1 <- 40
@@ -567,7 +569,8 @@ NumericMatrix vecchia_Linv(
     NumericVector covparms,
     StringVector covfun_name,
     const NumericMatrix locs,
-    IntegerMatrix NNarray ){
+    IntegerMatrix NNarray, 
+    int start_ind = 1){
     
     // data dimensions
     int n = locs.nrow();
@@ -586,7 +589,7 @@ NumericMatrix vecchia_Linv(
     //cube (*p_d_covfun)(NumericVector, NumericMatrix) = covstruct.p_d_covfun;
 
     // loop over every observation    
-    for(int i=0; i<n; i++){
+    for(int i=start_ind-1; i<n; i++){
     
         Rcpp::checkUserInterrupt();
         int bsize = std::min(i+1,m);

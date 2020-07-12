@@ -17,6 +17,10 @@
 #include "covmatrix_funs_06.h"
 #include "covmatrix_funs_07.h"
 #include "covmatrix_funs_08.h"
+#include "covmatrix_funs_09.h"
+#include "covmatrix_funs_10.h"
+#include "covmatrix_funs_11.h"
+#include "covmatrix_funs_12.h"
 
 using namespace Rcpp;
 using namespace arma;
@@ -38,10 +42,35 @@ covfun_t get_covfun(std::string covfun_name_string)
         covstruct.p_covfun = &matern_isotropic; 
         covstruct.p_d_covfun = &d_matern_isotropic;
     } 
+    else if( covfun_name_string.compare("matern15_isotropic") == 0 )
+    { 
+        covstruct.p_covfun = &matern15_isotropic; 
+        covstruct.p_d_covfun = &d_matern15_isotropic;
+    } 
+    else if( covfun_name_string.compare("matern25_isotropic") == 0 )
+    { 
+        covstruct.p_covfun = &matern25_isotropic; 
+        covstruct.p_d_covfun = &d_matern25_isotropic;
+    } 
+    else if( covfun_name_string.compare("matern35_isotropic") == 0 )
+    { 
+        covstruct.p_covfun = &matern35_isotropic; 
+        covstruct.p_d_covfun = &d_matern35_isotropic;
+    } 
+    else if( covfun_name_string.compare("matern45_isotropic") == 0 )
+    { 
+        covstruct.p_covfun = &matern45_isotropic; 
+        covstruct.p_d_covfun = &d_matern45_isotropic;
+    } 
     else if( covfun_name_string.compare("matern_anisotropic2D") == 0 )
     { 
         covstruct.p_covfun = &matern_anisotropic2D; 
         covstruct.p_d_covfun = &d_matern_anisotropic2D;
+    } 
+    else if( covfun_name_string.compare("exponential_anisotropic2D") == 0 )
+    { 
+        covstruct.p_covfun = &exponential_anisotropic2D; 
+        covstruct.p_d_covfun = &d_exponential_anisotropic2D;
     } 
     else if( covfun_name_string.compare("exponential_anisotropic3D") == 0 )
     { 
@@ -122,6 +151,26 @@ covfun_t get_covfun(std::string covfun_name_string)
     { 
         covstruct.p_covfun = &matern_scaledim;
         covstruct.p_d_covfun = &d_matern_scaledim;
+    }
+    else if( covfun_name_string.compare("matern15_scaledim") == 0 )
+    { 
+        covstruct.p_covfun = &matern15_scaledim;
+        covstruct.p_d_covfun = &d_matern15_scaledim;
+    }
+    else if( covfun_name_string.compare("matern25_scaledim") == 0 )
+    { 
+        covstruct.p_covfun = &matern25_scaledim;
+        covstruct.p_d_covfun = &d_matern25_scaledim;
+    }
+    else if( covfun_name_string.compare("matern35_scaledim") == 0 )
+    { 
+        covstruct.p_covfun = &matern35_scaledim;
+        covstruct.p_d_covfun = &d_matern35_scaledim;
+    }
+    else if( covfun_name_string.compare("matern45_scaledim") == 0 )
+    { 
+        covstruct.p_covfun = &matern45_scaledim;
+        covstruct.p_d_covfun = &d_matern45_scaledim;
     }
     else if( covfun_name_string.compare("exponential_scaledim") == 0 )
     { 

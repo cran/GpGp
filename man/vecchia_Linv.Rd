@@ -4,7 +4,7 @@
 \alias{vecchia_Linv}
 \title{Entries of inverse Cholesky approximation}
 \usage{
-vecchia_Linv(covparms, covfun_name, locs, NNarray)
+vecchia_Linv(covparms, covfun_name, locs, NNarray, start_ind = 1L)
 }
 \arguments{
 \item{covparms}{A vector of covariance parameters appropriate
@@ -21,6 +21,9 @@ the number of rows of \code{locs}.}
 Row \code{i} contains the indices
 of the observations that observation \code{i} conditions on. By convention,
 the first element of row \code{i} is \code{i}.}
+
+\item{start_ind}{Compute entries of Linv only for rows \code{start_ind}
+until the last row.}
 }
 \value{
 matrix containing entries of inverse Cholesky
