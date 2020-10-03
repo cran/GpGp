@@ -5,7 +5,6 @@
 #include <RcppArmadillo.h>
 #include <iostream>
 #include <vector>
-#include <cassert>
 #include "basis.h"
 #include "covmatrix_funs_01.h"
 
@@ -34,18 +33,18 @@ using namespace arma;
 //' The nugget value \eqn{ \sigma^2 \tau^2 } is added to the diagonal of the covariance matrix.
 //' NOTE: the nugget is \eqn{ \sigma^2 \tau^2 }, not \eqn{ \tau^2 }. 
 // [[Rcpp::export]]
-arma::mat matern_scaledim(NumericVector covparms, NumericMatrix locs ){
+arma::mat matern_scaledim(arma::vec covparms, arma::mat locs ){
 
-    int dim = locs.ncol();
+    int dim = locs.n_cols;
 
-    if( covparms.length() - 3 != dim ){
+    if( covparms.n_elem - 3 != dim ){
         stop("length of covparms does not match dim of locs");
     }
             
-    int n = locs.nrow();
+    int n = locs.n_rows;
     double nugget = covparms( 0 )*covparms( dim + 2 );
     double smooth = covparms(dim+1);
-    double normcon = covparms(0)/(pow(2.0,smooth-1.0)*Rf_gammafn(smooth));
+    double normcon = covparms(0)/(pow(2.0,smooth-1.0)*boost::math::tgamma(smooth));
     
     // create scaled locations
     mat locs_scaled(n,dim);
@@ -72,7 +71,7 @@ arma::mat matern_scaledim(NumericVector covparms, NumericMatrix locs ){
         } else {
             // calculate covariance            
             covmat(i2,i1) = normcon*
-                pow( d, smooth )*Rf_bessel_k( d, smooth, 1.0 );
+                pow( d, smooth )* boost::math::cyl_bessel_k(smooth, d);
         }
         // add nugget
         if( i1 == i2 ){ covmat(i2,i2) += nugget; } 
@@ -84,17 +83,17 @@ arma::mat matern_scaledim(NumericVector covparms, NumericMatrix locs ){
 
 //' @describeIn matern_scaledim Derivatives with respect to parameters
 // [[Rcpp::export]]
-arma::cube d_matern_scaledim(NumericVector covparms, NumericMatrix locs ){
+arma::cube d_matern_scaledim(arma::vec covparms, arma::mat locs ){
 
-    int dim = locs.ncol();
-    if( covparms.length() - 3 != dim ){
+    int dim = locs.n_cols;
+    if( covparms.n_elem - 3 != dim ){
         stop("length of covparms does not match dim of locs");
     }
             
-    int n = locs.nrow();
+    int n = locs.n_rows;
     double nugget = covparms( 0 )*covparms( dim + 2 );
     double smooth = covparms(dim+1);
-    double normcon = covparms(0)/(pow(2.0,smooth-1.0)*Rf_gammafn(smooth));
+    double normcon = covparms(0)/(pow(2.0,smooth-1.0)*boost::math::tgamma(smooth));
     
     // create scaled locations
     mat locs_scaled(n,dim);
@@ -106,10 +105,10 @@ arma::cube d_matern_scaledim(NumericVector covparms, NumericMatrix locs ){
 
     double eps = 1e-8;
     double normconeps = 
-        covparms(0)/(pow(2.0,smooth+eps-1.0)*Rf_gammafn(smooth+eps));
+        covparms(0)/(pow(2.0,smooth+eps-1.0)*boost::math::tgamma(smooth+eps));
     
     // calculate derivatives
-    arma::cube dcovmat = arma::cube(n,n,covparms.length(), fill::zeros);
+    arma::cube dcovmat = arma::cube(n,n,covparms.n_elem, fill::zeros);
     for(int i2=0; i2<n; i2++){ for(int i1=0; i1<=i2; i1++){
         
         double d = 0.0;
@@ -123,25 +122,25 @@ arma::cube d_matern_scaledim(NumericVector covparms, NumericMatrix locs ){
             cov = covparms(0);
             dcovmat(i1,i2,0) += 1.0;
         } else {
-            cov = normcon*pow( d, smooth )*Rf_bessel_k(d,smooth,1.0);
+            cov = normcon*pow( d, smooth )* boost::math::cyl_bessel_k(smooth, d);
             // variance parameter
             dcovmat(i1,i2,0) += cov/covparms(0);
             // range parameters
             for(int j=0; j<dim; j++){
                 double dj2 = pow( locs_scaled(i1,j) - locs_scaled(i2,j), 2.0 );
                 dcovmat(i1,i2,j+1) += normcon*pow( d, smooth - 1.0)*
-                    Rf_bessel_k(d,smooth-1.0,1.0)*dj2/covparms(j+1);
+                    boost::math::cyl_bessel_k(smooth - 1.0, d)*dj2/covparms(j+1);
             }
             // smoothness parameter (finite differencing)
             dcovmat(i1,i2,dim+1) += 
-                ( normconeps*pow(d,smooth+eps)*Rf_bessel_k(d,smooth+eps,1.0) -
+                ( normconeps*pow(d,smooth+eps)* boost::math::cyl_bessel_k(smooth + eps, d) -
                   cov )/eps;
         }
         if( i1 == i2 ){ // update diagonal entry
             dcovmat(i1,i2,0) += covparms(dim+2);
             dcovmat(i1,i2,dim+2) += covparms(0); 
         } else { // fill in opposite entry
-            for(int j=0; j<covparms.length(); j++){
+            for(int j=0; j<covparms.n_elem; j++){
                 dcovmat(i2,i1,j) = dcovmat(i1,i2,j);
             }
         }
@@ -172,15 +171,15 @@ arma::cube d_matern_scaledim(NumericVector covparms, NumericMatrix locs ){
 //' The nugget value \eqn{ \sigma^2 \tau^2 } is added to the diagonal of the covariance matrix.
 //' NOTE: the nugget is \eqn{ \sigma^2 \tau^2 }, not \eqn{ \tau^2 }. 
 // [[Rcpp::export]]
-arma::mat exponential_scaledim(NumericVector covparms, NumericMatrix locs ){
+arma::mat exponential_scaledim(arma::vec covparms, arma::mat locs ){
 
-    int dim = locs.ncol();
+    int dim = locs.n_cols;
 
-    if( covparms.length() - 2 != dim ){
+    if( covparms.n_elem - 2 != dim ){
         stop("length of covparms does not match dim of locs");
     }
             
-    int n = locs.nrow();
+    int n = locs.n_rows;
     double nugget = covparms( 0 )*covparms( dim + 1 );
 
     // create scaled locations
@@ -218,14 +217,14 @@ arma::mat exponential_scaledim(NumericVector covparms, NumericMatrix locs ){
 
 //' @describeIn exponential_scaledim Derivatives with respect to parameters
 // [[Rcpp::export]]
-arma::cube d_exponential_scaledim(NumericVector covparms, NumericMatrix locs ){
+arma::cube d_exponential_scaledim(arma::vec covparms, arma::mat locs ){
 
-    int dim = locs.ncol();
-    if( covparms.length() - 2 != dim ){
+    int dim = locs.n_cols;
+    if( covparms.n_elem - 2 != dim ){
         stop("length of covparms does not match dim of locs");
     }
             
-    int n = locs.nrow();
+    int n = locs.n_rows;
     double nugget = covparms( 0 )*covparms( dim + 1 );
 
     // create scaled locations
@@ -237,7 +236,7 @@ arma::cube d_exponential_scaledim(NumericVector covparms, NumericMatrix locs ){
     }
 
     // calculate derivatives
-    arma::cube dcovmat = arma::cube(n,n,covparms.length(), fill::zeros);
+    arma::cube dcovmat = arma::cube(n,n,covparms.n_elem, fill::zeros);
     for(int i2=0; i2<n; i2++){ for(int i1=0; i1<=i2; i1++){
         
         double d = 0.0;
@@ -264,7 +263,7 @@ arma::cube d_exponential_scaledim(NumericVector covparms, NumericMatrix locs ){
             dcovmat(i1,i2,0) += covparms(dim+1);
             dcovmat(i1,i2,dim+1) += covparms(0); 
         } else { // fill in opposite entry
-            for(int j=0; j<covparms.length(); j++){
+            for(int j=0; j<covparms.n_elem; j++){
                 dcovmat(i2,i1,j) = dcovmat(i1,i2,j);
             }
         }
@@ -300,14 +299,14 @@ arma::cube d_exponential_scaledim(NumericVector covparms, NumericMatrix locs ){
 //' The nugget value \eqn{ \sigma^2 \tau^2 } is added to the diagonal of the covariance matrix.
 //' NOTE: the nugget is \eqn{ \sigma^2 \tau^2 }, not \eqn{ \tau^2 }. 
 // [[Rcpp::export]]
-arma::mat matern_spacetime(NumericVector covparms, NumericMatrix locs ){
+arma::mat matern_spacetime(arma::vec covparms, arma::mat locs ){
     
     // number of spatial dimensions
-    int dim = locs.ncol() - 1;
-    int n = locs.nrow();
+    int dim = locs.n_cols - 1;
+    int n = locs.n_rows;
 
     // create scaled locations
-    NumericMatrix locs_scaled(n,dim+1);
+    arma::mat locs_scaled(n,dim+1);
     for(int j=0; j<dim; j++){ 
         for(int i=0; i<n; i++){
             locs_scaled(i,j) = locs(i,j)/covparms(1);
@@ -317,7 +316,7 @@ arma::mat matern_spacetime(NumericVector covparms, NumericMatrix locs ){
         locs_scaled(i,dim) = locs(i,dim)/covparms(2);
     }
     
-    NumericVector newparms(4);
+    arma::vec newparms(4);
     newparms(0) = covparms(0);
     newparms(1) = 1.0;
     newparms(2) = covparms(3);
@@ -329,20 +328,20 @@ arma::mat matern_spacetime(NumericVector covparms, NumericMatrix locs ){
 
 //' @describeIn matern_spacetime Derivatives with respect to parameters
 // [[Rcpp::export]]
-arma::cube d_matern_spacetime(NumericVector covparms, NumericMatrix locs ){
+arma::cube d_matern_spacetime(arma::vec covparms, arma::mat locs ){
     
     // number of spatial dimensions
-    int dim = locs.ncol() - 1;
-    int n = locs.nrow();
+    int dim = locs.n_cols - 1;
+    int n = locs.n_rows;
     double nugget = covparms( 0 )*covparms( 4 );
     double smooth = covparms( 3 );
-    double normcon = covparms(0)/(pow(2.0,smooth-1.0)*Rf_gammafn(smooth));
+    double normcon = covparms(0)/(pow(2.0,smooth-1.0)*boost::math::tgamma(smooth));
     double eps = 1e-8;
     double normconeps = 
-        covparms(0)/(pow(2.0,smooth+eps-1.0)*Rf_gammafn(smooth+eps));
+        covparms(0)/(pow(2.0,smooth+eps-1.0)*boost::math::tgamma(smooth+eps));
 
     // create scaled locations
-    NumericMatrix locs_scaled(n,dim+1);
+    arma::mat locs_scaled(n,dim+1);
     for(int j=0; j<dim; j++){ 
         for(int i=0; i<n; i++){
             locs_scaled(i,j) = locs(i,j)/covparms(1);
@@ -353,7 +352,7 @@ arma::cube d_matern_spacetime(NumericVector covparms, NumericMatrix locs ){
     }
     
     // calculate derivatives
-    arma::cube dcovmat = arma::cube(n,n,covparms.length(), fill::zeros);
+    arma::cube dcovmat = arma::cube(n,n,covparms.n_elem, fill::zeros);
     for(int i2=0; i2<n; i2++){ for(int i1=0; i1<=i2; i1++){
         
         double d = 0.0;
@@ -367,7 +366,7 @@ arma::cube d_matern_spacetime(NumericVector covparms, NumericMatrix locs ){
             cov = covparms(0);
             dcovmat(i1,i2,0) += 1.0;
         } else {
-            cov = normcon*pow( d, smooth )*Rf_bessel_k(d,smooth,1.0);
+            cov = normcon*pow( d, smooth )*boost::math::cyl_bessel_k(smooth, d);
 
             // variance parameter
             dcovmat(i1,i2,0) += cov/covparms(0);
@@ -378,21 +377,21 @@ arma::cube d_matern_spacetime(NumericVector covparms, NumericMatrix locs ){
                 dj2 += pow(locs_scaled(i1,j)-locs_scaled(i2,j),2.0);
             }
             dcovmat(i1,i2,1) += normcon*pow( d, smooth - 1.0)*
-                Rf_bessel_k(d,smooth-1.0,1.0)*dj2/covparms(1);
+                boost::math::cyl_bessel_k(smooth - 1.0, d)*dj2/covparms(1);
             dj2 = pow(locs_scaled(i1,dim)-locs_scaled(i2,dim),2.0);
             dcovmat(i1,i2,2) += normcon*pow( d, smooth - 1.0)*
-                Rf_bessel_k(d,smooth-1.0,1.0)*dj2/covparms(2);
+                boost::math::cyl_bessel_k(smooth - 1.0, d)*dj2/covparms(2);
             
             // smoothness parameter (finite differencing)
             dcovmat(i1,i2,3) += 
-                ( normconeps*pow(d,smooth+eps)*Rf_bessel_k(d,smooth+eps,1.0) -
+                ( normconeps*pow(d,smooth+eps)* boost::math::cyl_bessel_k(smooth + eps, d) -
                   cov )/eps;
         }
         if( i1 == i2 ){ // update diagonal entry
             dcovmat(i1,i2,0) += covparms(4);
             dcovmat(i1,i2,4) += covparms(0); 
         } else { // fill in opposite entry
-            for(int j=0; j<covparms.length(); j++){
+            for(int j=0; j<covparms.n_elem; j++){
                 dcovmat(i2,i1,j) = dcovmat(i1,i2,j);
             }
         }
@@ -425,14 +424,14 @@ arma::cube d_matern_spacetime(NumericVector covparms, NumericMatrix locs ){
 //' The nugget value \eqn{ \sigma^2 \tau^2 } is added to the diagonal of the covariance matrix.
 //' NOTE: the nugget is \eqn{ \sigma^2 \tau^2 }, not \eqn{ \tau^2 }. 
 // [[Rcpp::export]]
-arma::mat exponential_spacetime(NumericVector covparms, NumericMatrix locs ){
+arma::mat exponential_spacetime(arma::vec covparms, arma::mat locs ){
     
     // number of spatial dimensions
-    int dim = locs.ncol() - 1;
-    int n = locs.nrow();
+    int dim = locs.n_cols - 1;
+    int n = locs.n_rows;
 
     // create scaled locations
-    NumericMatrix locs_scaled(n,dim+1);
+    arma::mat locs_scaled(n,dim+1);
     for(int j=0; j<dim; j++){ 
         for(int i=0; i<n; i++){
             locs_scaled(i,j) = locs(i,j)/covparms(1);
@@ -442,7 +441,7 @@ arma::mat exponential_spacetime(NumericVector covparms, NumericMatrix locs ){
         locs_scaled(i,dim) = locs(i,dim)/covparms(2);
     }
     
-    NumericVector newparms(4);
+    arma::vec newparms(4);
     newparms(0) = covparms(0);
     newparms(1) = 1.0;
     newparms(2) = covparms(3);
@@ -453,15 +452,15 @@ arma::mat exponential_spacetime(NumericVector covparms, NumericMatrix locs ){
 
 //' @describeIn exponential_spacetime Derivatives with respect to parameters
 // [[Rcpp::export]]
-arma::cube d_exponential_spacetime(NumericVector covparms, NumericMatrix locs ){
+arma::cube d_exponential_spacetime(arma::vec covparms, arma::mat locs ){
     
     // number of spatial dimensions
-    int dim = locs.ncol() - 1;
-    int n = locs.nrow();
+    int dim = locs.n_cols - 1;
+    int n = locs.n_rows;
     //double nugget = covparms( 0 )*covparms( 3 );
 
     // create scaled locations
-    NumericMatrix locs_scaled(n,dim+1);
+    arma::mat locs_scaled(n,dim+1);
     for(int j=0; j<dim; j++){ 
         for(int i=0; i<n; i++){
             locs_scaled(i,j) = locs(i,j)/covparms(1);
@@ -472,7 +471,7 @@ arma::cube d_exponential_spacetime(NumericVector covparms, NumericMatrix locs ){
     }
     
     // calculate derivatives
-    arma::cube dcovmat = arma::cube(n,n,covparms.length(), fill::zeros);
+    arma::cube dcovmat = arma::cube(n,n,covparms.n_elem, fill::zeros);
     for(int i2=0; i2<n; i2++){ for(int i1=0; i1<=i2; i1++){
         
         double d = 0.0;
@@ -504,7 +503,7 @@ arma::cube d_exponential_spacetime(NumericVector covparms, NumericMatrix locs ){
             dcovmat(i1,i2,0) += covparms(3);
             dcovmat(i1,i2,3) += covparms(0); 
         } else { // fill in opposite entry
-            for(int j=0; j<covparms.length(); j++){
+            for(int j=0; j<covparms.n_elem; j++){
                 dcovmat(i2,i1,j) = dcovmat(i1,i2,j);
             }
         }
