@@ -155,6 +155,37 @@ d_matern_anisotropic3D <- function(covparms, locs) {
     .Call('_GpGp_d_matern_anisotropic3D', PACKAGE = 'GpGp', covparms, locs)
 }
 
+#' Geometrically anisotropic Matern covariance function (three dimensions, alternate parameterization)
+#'
+#' From a matrix of locations and covariance parameters of the form
+#' (variance, B11, B12, B13, B22, B23, B33, smoothness, nugget), return the square matrix of
+#' all pairwise covariances.
+#' @param locs A matrix with \code{n} rows and \code{3} columns.
+#' Each row of locs is a point in R^3.
+#' @param covparms A vector with covariance parameters
+#' in the form (variance, B11, B12, B13, B22, B23, B33, smoothness, nugget)
+#' @return A matrix with \code{n} rows and \code{n} columns, with the i,j entry
+#' containing the covariance between observations at \code{locs[i,]} and
+#' \code{locs[j,]}.
+#' @section Parameterization:
+#' The covariance parameter vector is (variance, B11, B12, B13, B22, B23, B33, smoothness, nugget)
+#' where B11, B12, B13, B22, B23, B33, transform the three coordinates as
+#' \deqn{ u_1 = B11[ x_1 + B12 x_2 + B13 x_3] }
+#' \deqn{ u_2 = B22[ x_2 + B23 x_3] }
+#' \deqn{ u_3 = B33[ x_3 ] }
+#' Assuming x is transformed to u and y transformed to v, the covariances are 
+#' \deqn{ M(x,y) = \sigma^2 2^{1-\nu}/\Gamma(\nu) (|| u - v || )^\nu K_\nu(|| u - v ||) }
+#' The nugget value \eqn{ \sigma^2 \tau^2 } is added to the diagonal of the covariance matrix.
+#' NOTE: the nugget is \eqn{ \sigma^2 \tau^2 }, not \eqn{ \tau^2 }. 
+matern_anisotropic3D_alt <- function(covparms, locs) {
+    .Call('_GpGp_matern_anisotropic3D_alt', PACKAGE = 'GpGp', covparms, locs)
+}
+
+#' @describeIn matern_anisotropic3D Derivatives of anisotropic Matern covariance
+d_matern_anisotropic3D_alt <- function(covparms, locs) {
+    .Call('_GpGp_d_matern_anisotropic3D_alt', PACKAGE = 'GpGp', covparms, locs)
+}
+
 #' Geometrically anisotropic exponential covariance function (two dimensions)
 #'
 #' From a matrix of locations and covariance parameters of the form
@@ -1006,8 +1037,8 @@ vecchia_Linv <- function(covparms, covfun_name, locs, NNarray, start_ind = 1L) {
 #' y <- X %*% c(1,2) + fast_Gp_sim(covparms, "matern_isotropic", locs, 50 )
 #' ord <- order_maxmin(locs)
 #' NNarray <- find_ordered_nn(locs,20)
-#' loglik <- vecchia_profbeta_loglik_grad_info( covparms, "matern_isotropic", 
-#'     y, X, locs, NNarray )
+#' #loglik <- vecchia_profbeta_loglik_grad_info( covparms, "matern_isotropic", 
+#' #    y, X, locs, NNarray )
 #' @export
 vecchia_profbeta_loglik_grad_info <- function(covparms, covfun_name, y, X, locs, NNarray) {
     .Call('_GpGp_vecchia_profbeta_loglik_grad_info', PACKAGE = 'GpGp', covparms, covfun_name, y, X, locs, NNarray)
@@ -1043,7 +1074,7 @@ vecchia_profbeta_loglik_grad_info <- function(covparms, covfun_name, y, X, locs,
 #' y <- X %*% c(1,2) + fast_Gp_sim(covparms, "matern_isotropic", locs, 50 )
 #' ord <- order_maxmin(locs)
 #' NNarray <- find_ordered_nn(locs,20)
-#' loglik <- vecchia_profbeta_loglik( covparms, "matern_isotropic", y, X, locs, NNarray )
+#' #loglik <- vecchia_profbeta_loglik( covparms, "matern_isotropic", y, X, locs, NNarray )
 #' @export
 vecchia_profbeta_loglik <- function(covparms, covfun_name, y, X, locs, NNarray) {
     .Call('_GpGp_vecchia_profbeta_loglik', PACKAGE = 'GpGp', covparms, covfun_name, y, X, locs, NNarray)
@@ -1081,7 +1112,7 @@ vecchia_profbeta_loglik <- function(covparms, covfun_name, y, X, locs, NNarray) 
 #' y <- fast_Gp_sim(covparms, "matern_isotropic", locs, 50 )
 #' ord <- order_maxmin(locs)
 #' NNarray <- find_ordered_nn(locs,20)
-#' loglik <- vecchia_meanzero_loglik( covparms, "matern_isotropic", y, locs, NNarray )
+#' #loglik <- vecchia_meanzero_loglik( covparms, "matern_isotropic", y, locs, NNarray )
 #' @export
 vecchia_meanzero_loglik <- function(covparms, covfun_name, y, locs, NNarray) {
     .Call('_GpGp_vecchia_meanzero_loglik', PACKAGE = 'GpGp', covparms, covfun_name, y, locs, NNarray)
@@ -1121,8 +1152,8 @@ vecchia_meanzero_loglik <- function(covparms, covfun_name, y, locs, NNarray) {
 #' ord <- order_maxmin(locs)
 #' NNarray <- find_ordered_nn(locs,20)
 #' NNlist <- group_obs(NNarray)
-#' loglik <- vecchia_grouped_profbeta_loglik_grad_info( 
-#'     covparms, "matern_isotropic", y, X, locs, NNlist )
+#' #loglik <- vecchia_grouped_profbeta_loglik_grad_info( 
+#' #    covparms, "matern_isotropic", y, X, locs, NNlist )
 #' @export
 vecchia_grouped_profbeta_loglik_grad_info <- function(covparms, covfun_name, y, X, locs, NNlist) {
     .Call('_GpGp_vecchia_grouped_profbeta_loglik_grad_info', PACKAGE = 'GpGp', covparms, covfun_name, y, X, locs, NNlist)
@@ -1159,8 +1190,8 @@ vecchia_grouped_profbeta_loglik_grad_info <- function(covparms, covfun_name, y, 
 #' ord <- order_maxmin(locs)
 #' NNarray <- find_ordered_nn(locs,20)
 #' NNlist <- group_obs(NNarray)
-#' loglik <- vecchia_grouped_profbeta_loglik( 
-#'     covparms, "matern_isotropic", y, X, locs, NNlist )
+#' #loglik <- vecchia_grouped_profbeta_loglik( 
+#' #    covparms, "matern_isotropic", y, X, locs, NNlist )
 #' @export
 vecchia_grouped_profbeta_loglik <- function(covparms, covfun_name, y, X, locs, NNlist) {
     .Call('_GpGp_vecchia_grouped_profbeta_loglik', PACKAGE = 'GpGp', covparms, covfun_name, y, X, locs, NNlist)
@@ -1197,7 +1228,7 @@ vecchia_grouped_profbeta_loglik <- function(covparms, covfun_name, y, X, locs, N
 #' ord <- order_maxmin(locs)
 #' NNarray <- find_ordered_nn(locs,20)
 #' NNlist <- group_obs(NNarray)
-#' loglik <- vecchia_grouped_meanzero_loglik( covparms, "matern_isotropic", y, locs, NNlist )
+#' #loglik <- vecchia_grouped_meanzero_loglik( covparms, "matern_isotropic", y, locs, NNlist )
 #' @export
 vecchia_grouped_meanzero_loglik <- function(covparms, covfun_name, y, locs, NNlist) {
     .Call('_GpGp_vecchia_grouped_meanzero_loglik', PACKAGE = 'GpGp', covparms, covfun_name, y, locs, NNlist)

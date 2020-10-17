@@ -90,16 +90,16 @@ fisher_scoring <- function( likfun, start_parms, link,
         
         # if condition number of info matrix large, 
         # then gradient descent
-        tol <- 1e-4
+        tol <- 1e-10
         if (condition_number(info) > 1 / tol) {
             if (!silent) cat("Cond # of info matrix > 1/tol \n")
             #info <- 1.0*max(likobj0$info)*diag(nrow(likobj0$info))
             # regularize
-            diag(info) <- diag(info) + 0.00001*max(diag(info))
+            diag(info) <- diag(info) + tol*max(diag(info))
         }
 
         # calculate fisher step 
-        step <- - solve(info, grad)
+        step <- -solve(info, grad)
         
         # if step size large, then make it smaller
         if (mean(step^2) > 1) {
@@ -128,6 +128,11 @@ fisher_scoring <- function( likfun, start_parms, link,
         no_decrease <- FALSE
         both <- FALSE
         mult <- 1.0
+        #if(!wolfe_check(likobj0,likobj,logparms,newlogparms-logparms,both) &&
+        #        !no_decrease ){
+        #    cat("@@\n")
+        #    step <- -0.5*sqrt(mean(step^2))*grad/sqrt(sum(grad^2))
+        #}
         #while (!wolfe_check(likobj0,likobj,logparms,newlogparms-logparms,both) &&
         #        !no_decrease ){
         #    info <- 1/mult*max(likobj$info)*diag(nrow(likobj0$info))
@@ -181,6 +186,7 @@ fisher_scoring <- function( likfun, start_parms, link,
         loglik = loglik,
         no_decrease = no_decrease,
         grad = likobj$grad,
+        info = likobj$info,
         conv = ( abs(stepgrad) < convtol || no_decrease )
     )
     return(ret)

@@ -1,8 +1,8 @@
 Package: GpGp
 Type: Package
 Title: Fast Gaussian Process Computation Using Vecchia's Approximation
-Version: 0.3.0
-Date: 2020-10-02
+Version: 0.3.1
+Date: 2020-10-16
 Authors@R: c(
     person("Joseph", "Guinness", email = "joeguinness@gmail.com", role = c("aut", "cre")),
     person("Matthias", "Katzfuss", email = "katzfuss@gmail.com", role = "aut" ),
@@ -29,9 +29,9 @@ LinkingTo: Rcpp, RcppArmadillo, BH
 RoxygenNote: 7.1.1
 LazyData: true
 NeedsCompilation: yes
-Packaged: 2020-10-02 19:04:52 UTC; joe
+Packaged: 2020-10-16 18:20:32 UTC; guinness
 Author: Joseph Guinness [aut, cre],
   Matthias Katzfuss [aut],
   Youssef Fahmy [aut]
 Repository: CRAN
-Date/Publication: 2020-10-03 05:10:09 UTC
+Date/Publication: 2020-10-17 04:40:02 UTC
