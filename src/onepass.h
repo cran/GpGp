@@ -1,19 +1,18 @@
 #ifndef ONEPASS_H
 #define ONEPASS_H
 
+#include <RcppArmadillo.h>
+//[[Rcpp::depends(RcppArmadillo)]]
+
+#include "covmatrix_funs.h"
+
 #ifdef _OPENMP
   #include <omp.h>
 #endif
 
-#include <RcppArmadillo.h>
-#include "covmatrix_funs.h"
-
-//[[Rcpp::depends(RcppArmadillo)]]
-
 using namespace Rcpp;
 using namespace arma;
 
- 
 void compute_pieces(
     arma::vec covparms, 
     StringVector covfun_name,
@@ -46,28 +45,30 @@ void compute_pieces(
     covfun_name_string = covfun_name[0];
     
     // assign covariance fun and derivative based on covfun_name_string
-    covfun_t covstruct = get_covfun(covfun_name_string);
-    mat (*p_covfun)(arma::vec, arma::mat) = covstruct.p_covfun;
-    cube (*p_d_covfun)(arma::vec, arma::mat) = covstruct.p_d_covfun;
-    
-#pragma omp parallel
-{
-    arma::mat l_XSX=arma::mat(p, p, fill::zeros);
-    arma::vec l_ySX=arma::vec(p, fill::zeros);
-    double l_ySy=0.0;
-    double l_logdet=0.0;
-    arma::cube l_dXSX= arma::cube(p,p,nparms,fill::zeros);
-    arma::mat l_dySX=arma::mat(p, nparms, fill::zeros);
-    arma::vec l_dySy=  arma::vec(nparms, fill::zeros);
-    arma::vec l_dlogdet=arma::vec(nparms, fill::zeros);
-    arma::mat l_ainfo =arma::mat(nparms, nparms, fill::zeros);
 
-    // loop over every observation    
-#pragma omp for
+    /* p_covfun is an array of length 1. Its entry is a pointer to a function which takes
+     in arma::vec and arma::mat and returns mat. p_d_covfun is analogous. This was a workaround for the solaris bug*/
+
+    mat (*p_covfun[1])(arma::vec, arma::mat);
+    cube (*p_d_covfun[1])(arma::vec, arma::mat);
+    get_covfun(covfun_name_string, p_covfun, p_d_covfun);
+    
+
+#pragma omp parallel 
+{   
+    arma::mat l_XSX = arma::mat(p, p, fill::zeros);
+    arma::vec l_ySX = arma::vec(p, fill::zeros);
+    double l_ySy = 0.0;
+    double l_logdet = 0.0;
+    arma::cube l_dXSX = arma::cube(p,p, nparms, fill::zeros);
+    arma::mat l_dySX = arma::mat(p, nparms, fill::zeros);
+    arma::vec l_dySy = arma::vec(nparms, fill::zeros);
+    arma::vec l_dlogdet = arma::vec(nparms, fill::zeros);
+    arma::mat l_ainfo = arma::mat(nparms, nparms, fill::zeros);
+
+    #pragma omp for	    
     for(int i=0; i<n; i++){
     
-        arma::vec l_covparms(nparms);
-	    for(int j=0; j<nparms; j++){ l_covparms(j) = covparms(j); }
         int bsize = std::min(i+1,m);
 
         // first, fill in ysub, locsub, and X0 in reverse order
@@ -83,11 +84,10 @@ void compute_pieces(
         }
         
         // compute covariance matrix and derivatives and take cholesky
-        arma::mat covmat = (*p_covfun)( covparms, locsub );
-		
+        arma::mat covmat = p_covfun[0]( covparms, locsub );	
         arma::cube dcovmat;
         if(grad_info){ 
-            dcovmat = (*p_d_covfun)( covparms, locsub ); 
+            dcovmat = p_d_covfun[0]( covparms, locsub ); 
         }
 		
         arma::mat cholmat = eye( size(covmat) );
@@ -234,9 +234,9 @@ void compute_pieces_grouped(
     covfun_name_string = covfun_name[0];
     
     // assign covariance fun and derivative based on covfun_name_string
-    covfun_t covstruct = get_covfun(covfun_name_string);
-    mat (*p_covfun)(arma::vec, arma::mat) = covstruct.p_covfun;
-    cube (*p_d_covfun)(arma::vec, arma::mat) = covstruct.p_d_covfun;
+    mat (*p_covfun[1])(arma::vec, arma::mat);
+    cube (*p_d_covfun[1])(arma::vec, arma::mat);
+    get_covfun(covfun_name_string, p_covfun, p_d_covfun);
 
     // vector of all indices
     arma::vec all_inds = NNlist["all_inds"];
@@ -250,21 +250,20 @@ void compute_pieces_grouped(
     arma::vec last_resp_of_block = as<arma::vec>(NNlist["last_resp_of_block"]);
 
     int nb = last_ind_of_block.n_elem;  // number of blocks
-
-	#pragma omp parallel
-{
-    arma::mat l_XSX=arma::mat(p, p, fill::zeros);
-    arma::vec l_ySX=arma::vec(p, fill::zeros);
-    double l_ySy=0.0;
-    double l_logdet=0.0;
-    arma::cube l_dXSX= arma::cube(p,p,nparms,fill::zeros);
-    arma::mat l_dySX=arma::mat(p, nparms, fill::zeros);
-    arma::vec l_dySy=  arma::vec(nparms, fill::zeros);
-    arma::vec l_dlogdet=arma::vec(nparms, fill::zeros);
-    arma::mat l_ainfo =arma::mat(nparms, nparms, fill::zeros);
     
-    #pragma omp for
-    // loop over every block
+#pragma omp parallel 
+{   
+    arma::mat l_XSX = arma::mat(p, p, fill::zeros);
+    arma::vec l_ySX = arma::vec(p, fill::zeros);
+    double l_ySy = 0.0;
+    double l_logdet = 0.0;
+    arma::cube l_dXSX = arma::cube(p,p, nparms, fill::zeros);
+    arma::mat l_dySX = arma::mat(p, nparms, fill::zeros);
+    arma::vec l_dySy = arma::vec(nparms, fill::zeros);
+    arma::vec l_dlogdet = arma::vec(nparms, fill::zeros);
+    arma::mat l_ainfo = arma::mat(nparms, nparms, fill::zeros);
+
+#pragma omp for	    
     for(int i=0; i<nb; i++){
 
         // first ind and last ind are the positions in all_inds
@@ -301,11 +300,10 @@ void compute_pieces_grouped(
         }
 
         // compute covariance matrix and derivatives and take cholesky
-        arma::mat covmat(bsize,bsize);
-		covmat = (*p_covfun)( covparms, locsub );
+	arma::mat covmat = p_covfun[0]( covparms, locsub );
         arma::cube dcovmat(bsize,bsize,nparms);
         if(grad_info){
-            dcovmat = (*p_d_covfun)( covparms, locsub );
+            dcovmat = p_d_covfun[0]( covparms, locsub );
         }
 
         arma::mat cholmat = eye( size(covmat) );
@@ -405,7 +403,8 @@ void compute_pieces_grouped(
         }
         }
     }
-	#pragma omp critical
+
+#pragma omp critical
 {
     *XSX += l_XSX;
     *ySX += l_ySX;
@@ -416,7 +415,7 @@ void compute_pieces_grouped(
     *dySy += l_dySy;
     *dlogdet += l_dlogdet;
     *ainfo += l_ainfo;
-}   
+}
 }
 }    
 
@@ -654,21 +653,25 @@ NumericMatrix vecchia_Linv(
     int m = NNarray.n_cols;
     //int nparms = covparms.length();
     int dim = locs.n_cols;
-    NumericMatrix Linv(n,m);
     
     // convert StringVector to std::string to use .compare() below
     std::string covfun_name_string;
     covfun_name_string = covfun_name[0];
     
     // assign covariance fun and derivative based on covfun_name_string
-    covfun_t covstruct = get_covfun(covfun_name_string);
-    mat (*p_covfun)(arma::vec, arma::mat) = covstruct.p_covfun;
-    //cube (*p_d_covfun)(NumericVector, NumericMatrix) = covstruct.p_d_covfun;
-
+    mat (*p_covfun[1])(arma::vec, arma::mat);
+    cube (*p_d_covfun[1])(arma::vec, arma::mat);
+    get_covfun(covfun_name_string, p_covfun, p_d_covfun);
+    
+    arma::mat Linv = arma::mat(n, m, fill::zeros);
     // loop over every observation    
+#pragma omp parallel 
+{
+    arma::mat l_Linv = arma::mat(n, m, fill::zeros);
+#pragma omp for
     for(int i=start_ind-1; i<n; i++){
     
-        Rcpp::checkUserInterrupt();
+        //Rcpp::checkUserInterrupt();
         int bsize = std::min(i+1,m);
 
         // first, fill in ysub, locsub, and X0 in reverse order
@@ -678,7 +681,7 @@ NumericMatrix vecchia_Linv(
         }
         
         // compute covariance matrix and derivatives and take cholesky
-        arma::mat covmat = (*p_covfun)( covparms, locsub );
+        arma::mat covmat = p_covfun[0]( covparms, locsub );
         arma::mat cholmat = eye( size(covmat) );
         bool checkchol = chol( cholmat, covmat, "lower" );
         //if(i==n-1){ Rcout << checkchol << endl; }
@@ -694,10 +697,14 @@ NumericMatrix vecchia_Linv(
             choli2 = solve( trimatu(cholmat.t()), onevec );
         }
         for(int j=bsize-1; j>=0; j--){
-            Linv(i,bsize-1-j) = choli2(j);
+            l_Linv(i,bsize-1-j) = choli2(j);
         }
-    }    
-    return Linv;    
+    }
+#pragma omp critical
+    Linv += l_Linv; 
+}
+    NumericMatrix Linv_r = wrap(Linv);
+    return Linv_r;    
 }
 
 
