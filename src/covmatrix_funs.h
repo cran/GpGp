@@ -18,6 +18,7 @@
 #include "covmatrix_funs_10.h"
 #include "covmatrix_funs_11.h"
 #include "covmatrix_funs_12.h"
+#include "covmatrix_funs_13.h"
 
 using namespace Rcpp;
 using namespace arma;
@@ -51,6 +52,11 @@ void get_covfun(std::string covfun_name_string,  mat (*p_covfun[1])(arma::vec, a
     { 
         p_covfun[0] = exponential_anisotropic3D; 
         p_d_covfun[0] = d_exponential_anisotropic3D;
+    } 
+    else if( covfun_name_string.compare("exponential_anisotropic3D_alt") == 0 )
+    { 
+        p_covfun[0] = exponential_anisotropic3D_alt; 
+        p_d_covfun[0] = d_exponential_anisotropic3D_alt;
     } 
     else if( covfun_name_string.compare("matern_anisotropic3D") == 0 )
     { 
@@ -171,6 +177,21 @@ void get_covfun(std::string covfun_name_string,  mat (*p_covfun[1])(arma::vec, a
     { 
         p_covfun[0] = matern45_scaledim;
         p_d_covfun[0] = d_matern45_scaledim;
+    }
+    else if( covfun_name_string.compare("matern_categorical") == 0 )
+    { 
+        p_covfun[0] = matern_categorical;
+        p_d_covfun[0] = d_matern_categorical;
+    }
+    else if( covfun_name_string.compare("matern_spacetime_categorical") == 0 )
+    { 
+        p_covfun[0] = matern_spacetime_categorical;
+        p_d_covfun[0] = d_matern_spacetime_categorical;
+    }
+    else if( covfun_name_string.compare("matern_spacetime_categorical_local") == 0 )
+    { 
+        p_covfun[0] = matern_spacetime_categorical_local;
+        p_d_covfun[0] = d_matern_spacetime_categorical_local;
     }
     else { // stop the program
         Rcpp::Rcout << "Unrecognized Covariance Function Name \n";

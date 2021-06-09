@@ -21,6 +21,7 @@ covfun_names <- c(
     "matern_anisotropic3D",
     "matern_anisotropic3D_alt",
     "exponential_anisotropic3D",
+    "exponential_anisotropic3D_alt",
     "matern_nonstat_var",
     "exponential_nonstat_var",
     "matern_sphere",
@@ -30,7 +31,10 @@ covfun_names <- c(
     "matern_sphere_warp",
     "exponential_sphere_warp",
     "matern_spheretime_warp",
-    "exponential_spheretime_warp"
+    "exponential_spheretime_warp",
+    "matern_categorical",
+    "matern_spacetime_categorical",
+    "matern_spacetime_categorical_local"
 )
 
 get_test_locs <- function(covfun_name,n){
@@ -71,7 +75,7 @@ get_test_locs <- function(covfun_name,n){
         locs <- matrix(runif(2*n),n,2)
     } else if(covfun_name=="exponential_anisotropic2D"){
         locs <- matrix(runif(2*n),n,2)
-    } else if(covfun_name=="exponential_anisotropic3D"){
+    } else if(covfun_name %in% c("exponential_anisotropic3D","exponential_anisotropic3D_alt")){
         locs <- matrix(runif(3*n),n,3)           
     } else if(covfun_name %in% c("matern_anisotropic3D","matern_anisotropic3D_alt") ){
         locs <- matrix(runif(3*n),n,3)           
@@ -95,6 +99,12 @@ get_test_locs <- function(covfun_name,n){
         locs <- cbind(lonlat,runif(n))
     } else if(covfun_name=="exponential_spheretime_warp"){
         locs <- cbind(lonlat,runif(n))
+    } else if(covfun_name=="matern_categorical"){
+        locs <- cbind(runif(n),runif(n), sample(1:3,n,replace=TRUE))
+    } else if(covfun_name=="matern_spacetime_categorical"){
+        locs <- cbind(runif(n),runif(n),runif(n), sample(1:3,n,replace=TRUE))
+    } else if(covfun_name=="matern_spacetime_categorical_local"){
+        locs <- cbind(runif(n),runif(n),runif(n), sample(1:3,n,replace=TRUE))
     } else {
         stop("unrecognized covariance in testing function")
     }

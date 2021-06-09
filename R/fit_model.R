@@ -130,6 +130,7 @@ fit_model <- function(y, locs, X = NULL, covfun_name = "matern_isotropic",
               "exponential_anisotropic3D",
               "matern_anisotropic3D",
               "matern_anisotropic3D_alt",
+              "exponential_anisotropic3D_alt",
               "matern_nonstat_var",
               "exponential_nonstat_var",
               "matern_sphere",
@@ -147,7 +148,11 @@ fit_model <- function(y, locs, X = NULL, covfun_name = "matern_isotropic",
               "matern25_scaledim",
               "matern35_scaledim",
               "matern45_scaledim",
-              "exponential_scaledim" ) )
+              "exponential_scaledim",
+              "matern_categorical",
+              "matern_spacetime_categorical",
+              "matern_spacetime_categorical_local"
+            ))
     {
         stop("unrecognized covariance function name `covfun_name'.")
     }
@@ -242,8 +247,17 @@ fit_model <- function(y, locs, X = NULL, covfun_name = "matern_isotropic",
     # get neighbor array if not provided
     if( is.null(NNarray) ){
         if(!silent) cat("Finding nearest neighbors...")
-        NNarray <- find_ordered_nn(locsord, m=max(m_seq), lonlat = lonlat,
+
+        # need to ignore category variable for categorical covfuns
+        if( covfun_name %in% c("matern_categorical","matern_spacetime_categorical","matern_spacetime_categorical_local") ){
+            locs_for_NN <- locsord[ , 1:(ncol(locsord)-1) ]
+        } else {
+            locs_for_NN <- locsord
+        }
+        
+        NNarray <- find_ordered_nn(locs_for_NN, m=max(m_seq), lonlat = lonlat,
             st_scale = st_scale)
+        
         if(!silent) cat("Done \n")
     }
 
@@ -392,7 +406,7 @@ get_start_parms <- function(y,X,locs,covfun_name){
         start_range <- mean( dmat )/4
         start_parms <- c(start_var, 1/start_range, 0, 1/start_range, start_nug)
     }
-    if(covfun_name == "exponential_anisotropic3D"){
+    if(covfun_name %in% c("exponential_anisotropic3D")){
         dmat <- fields::rdist(locs[randinds,1,drop=FALSE])
         start_range1 <- mean( dmat )/4
         dmat <- fields::rdist(locs[randinds,2,drop=FALSE])
@@ -401,6 +415,16 @@ get_start_parms <- function(y,X,locs,covfun_name){
         start_range3 <- mean( dmat )/4
         start_parms <- c(start_var, 1/start_range1, 0, 1/start_range2,
             0, 0, 1/start_range3, start_nug )
+    }
+    if(covfun_name %in% c("exponential_anisotropic3D_alt")){
+        dmat <- fields::rdist(locs[randinds,1,drop=FALSE])
+        start_range1 <- mean( dmat )/4
+        dmat <- fields::rdist(locs[randinds,2,drop=FALSE])
+        start_range2 <- mean( dmat )/4
+        dmat <- fields::rdist(locs[randinds,3,drop=FALSE])
+        start_range3 <- mean( dmat )/4
+        start_parms <- c(start_var, 1/start_range1, 0, 0, 1/start_range2,
+            0, 1/start_range3, start_nug )
     }
     if(covfun_name == "matern_anisotropic3D" ){
         dmat <- fields::rdist(locs[randinds,1,drop=FALSE])
@@ -523,6 +547,30 @@ get_start_parms <- function(y,X,locs,covfun_name){
         start_range <- mean( dmat )/4
         start_parms <- c(start_var, start_range, start_nug, rep(0,ncol(locs)-2))
     }
+    if(covfun_name == "matern_categorical"){
+        start_range <- mean( dmat )/4
+        start_parms <- c(start_var, start_range, start_smooth, start_var, start_nug)
+    }
+    if(covfun_name == "matern_spacetime_categorical"){
+        d <- ncol(locs)-2
+        dmat1 <- fields::rdist(locs[randinds,1:d])
+        dmat2 <- fields::rdist(locs[randinds,d+1,drop=FALSE])
+        start_range1 <- mean( dmat1 )/4
+        start_range2 <- mean( dmat2 )/1
+        start_parms <-
+            c(start_var, start_range1, start_range2, start_smooth, start_var, start_nug)
+    }
+    if(covfun_name == "matern_spacetime_categorical_local"){
+        d <- ncol(locs)-2
+        dmat1 <- fields::rdist(locs[randinds,1:d])
+        dmat2 <- fields::rdist(locs[randinds,d+1,drop=FALSE])
+        start_range1 <- mean( dmat1 )/4
+        start_range2 <- mean( dmat2 )/1
+        start_parms <-
+            c(start_var, start_range1, start_range2, start_smooth,
+              start_var, 1.5*start_range1, 1.5*start_range2, 1.0,
+              start_nug)
+    }
     return( list( start_parms = start_parms ) )
 }
 
@@ -550,13 +598,21 @@ get_linkfun <- function(covfun_name){
         ddlink <- function(x){  c( exp(x[1:2]), 0.0,  exp(x[4:5]) ) }
         invlink <- function(x){ c( log(x[1:2]), x[3], log(x[4:5]) ) }
     }
-    if(covfun_name == "exponential_anisotropic3D"){
+    if(covfun_name %in% c("exponential_anisotropic3D")){
         link <- function(x)
         { c( exp(x[1:2]), x[3], exp(x[4]), x[5:6], exp(x[7:8]) ) }
         dlink <- function(x)
         { c( exp(x[1:2]), 1.0, exp(x[4]), 1.0,1.0, exp(x[7:8]) ) }
         invlink <- function(x)
         { c( log(x[1:2]), x[3], log(x[4]), x[5:6], log(x[7:8]) ) }
+    }
+    if(covfun_name %in% c("exponential_anisotropic3D_alt")){
+        link <- function(x)
+        { c( exp(x[1:2]), x[3:4], exp(x[5]), x[6], exp(x[7:8]) ) }
+        dlink <- function(x)
+        { c( exp(x[1:2]), 1.0,1.0, exp(x[5]), 1.0, exp(x[7:8]) ) }
+        invlink <- function(x)
+        { c( log(x[1:2]), x[3:4], log(x[5]), x[6], log(x[7:8]) ) }
     }
     if(covfun_name == "matern_anisotropic3D" ){
         link <- function(x)
@@ -616,6 +672,8 @@ get_linkfun <- function(covfun_name){
     }
     if(covfun_name == "matern_spacetime"){ space_time <- TRUE }
     if(covfun_name == "exponential_spacetime"){ space_time <- TRUE }
+    if(covfun_name == "matern_spacetime_categorical"){ space_time <- TRUE }
+    if(covfun_name == "matern_spacetime_categorical_local"){ space_time <- TRUE }
     if(covfun_name == "matern_spheretime"){
         lonlat <- TRUE
         space_time <- TRUE
@@ -730,6 +788,36 @@ get_penalty <- function(y,X,locs,covfun_name){
         ddpen <- function(x){
             ddpen_nug(x,4) + ddpen_sm(x,3) + ddpen_var(x,1) + ddpen_sm_hi(x,3) }
     }
+    if(covfun_name == "matern_categorical"){
+          pen <- function(x){
+              pen_nug(x,5) +   pen_sm(x,3) +   pen_var(x,1) + pen_sm_hi(x,3)
+          }
+         dpen <- function(x){
+             dpen_nug(x,5) +  dpen_sm(x,3) +  dpen_var(x,1) + dpen_sm_hi(x,3)
+         }
+        ddpen <- function(x){
+            ddpen_nug(x,5) + ddpen_sm(x,3) + ddpen_var(x,1) + ddpen_sm_hi(x,3) }
+    }
+    if(covfun_name == "matern_spacetime_categorical"){
+          pen <- function(x){
+              pen_nug(x,6) +   pen_sm(x,4) +   pen_var(x,1) + pen_sm_hi(x,4)
+          }
+         dpen <- function(x){
+             dpen_nug(x,6) +  dpen_sm(x,4) +  dpen_var(x,1) + dpen_sm_hi(x,4)
+         }
+        ddpen <- function(x){
+            ddpen_nug(x,6) + ddpen_sm(x,4) + ddpen_var(x,1) + ddpen_sm_hi(x,4) }
+    }
+    if(covfun_name == "matern_spacetime_categorical_local"){
+          pen <- function(x){
+              pen_nug(x,9) +   pen_sm(x,4) +   pen_var(x,1) + pen_sm_hi(x,4) + pen_sm(x,8) + pen_var(x,5) + pen_sm_hi(x,8)
+          }
+         dpen <- function(x){
+             dpen_nug(x,9) +  dpen_sm(x,4) +  dpen_var(x,1) + dpen_sm_hi(x,4) + dpen_sm(x,8) + dpen_var(x,5) + dpen_sm_hi(x,8)
+         }
+        ddpen <- function(x){
+            ddpen_nug(x,9) + ddpen_sm(x,4) + ddpen_var(x,1) + ddpen_sm_hi(x,4)  + ddpen_sm(x,8) + ddpen_var(x,5) + ddpen_sm_hi(x,8) }
+    }
     if(covfun_name == "matern_anisotropic2D"){
           pen <- function(x){  pen_nug(x,6) +   pen_sm(x,5) +   pen_var(x,1)   }
          dpen <- function(x){  dpen_nug(x,6) +  dpen_sm(x,5) +  dpen_var(x,1)  }
@@ -740,7 +828,7 @@ get_penalty <- function(y,X,locs,covfun_name){
          dpen <- function(x){  dpen_nug(x,5)  +  dpen_var(x,1)  }
         ddpen <- function(x){  ddpen_nug(x,5)  + ddpen_var(x,1) }
     }
-    if(covfun_name == "exponential_anisotropic3D"){
+    if(covfun_name %in% c("exponential_anisotropic3D","exponential_anisotropic3D_alt")){
           pen <- function(x){  pen_nug(x,8)  +   pen_var(x,1)   }
          dpen <- function(x){  dpen_nug(x,8)  +  dpen_var(x,1)  }
         ddpen <- function(x){  ddpen_nug(x,8)  + ddpen_var(x,1) }
