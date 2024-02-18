@@ -89,7 +89,7 @@ order_middleout <- function( locs, lonlat = FALSE ){
 #' Return the ordering of locations sorted along one of the
 #' coordinates or the sum of multiple coordinates
 #' 
-#' @param coordinate integer or vector of integers in {1,...,d}. If a single integer,
+#' @param coordinate integer or vector of integers in (1,...,d). If a single integer,
 #' coordinates are ordered along that coordinate. If multiple integers,
 #' coordinates are ordered according to the sum of specified coordinate values. For example,
 #' when \code{d=2}, \code{coordinate = c(1,2)} orders from bottom left to top right.
@@ -148,9 +148,14 @@ order_coordinate <- function( locs, coordinate ){
 order_maxmin <- function(locs, lonlat = FALSE, 
     space_time = FALSE, st_scale = NULL){
 
+    # make sure locs is a matrix (for 1D case, and data frame case)
+    locs <- as.matrix(locs)
+    
     # FNN::get.knnx has strange behavior for exact matches
     # so add a small amount of noise to each location
     n <- nrow(locs)
+    # no need to reorder if only 1 location
+    if( n == 1 ){return(1)}
     ee <- min(apply( locs, 2, stats::sd ))
     locs <- locs + matrix( ee*1e-4*stats::rnorm(n*ncol(locs)), n, ncol(locs) )    
 

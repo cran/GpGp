@@ -15,7 +15,7 @@ in the form (variance, range_1, range_2, smoothness, nugget). range_1 is the
 spatial range, and range_2 is the temporal range.}
 
 \item{locs}{A matrix with \code{n} rows and \code{d+1} columns.
-Each row of locs is a point in R^{d+1}. The first \code{d} columns
+Each row of locs is a point in R^(d+1). The first \code{d} columns
 should contain the spatial coordinates. The last column contains the times.}
 }
 \value{
@@ -30,9 +30,9 @@ all pairwise covariances.
 }
 \section{Functions}{
 \itemize{
-\item \code{d_matern_spacetime}: Derivatives with respect to parameters
-}}
+\item \code{d_matern_spacetime()}: Derivatives with respect to parameters
 
+}}
 \section{Parameterization}{
 
 The covariance parameter vector is (variance, range_1, range_2, smoothness, nugget).
