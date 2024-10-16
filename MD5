@@ -1,9 +1,9 @@
-ef3ca81a7da548b2eeb670fa4291b18c *DESCRIPTION
+3b10c993b783fce5ac43d1f9eeb1fff9 *DESCRIPTION
 fbf270ee9b57f3c5e72a9ae7127c19cb *LICENSE
 dda14d48a22c5d8ccb507ea16f15be12 *NAMESPACE
-989f6bde44e7936e69930863d9e2f151 *NEWS.md
+407e992cf92f9d28551003f85ab63a04 *NEWS.md
 48481d537b026d116c93234850cfd05e *R/GpGp.R
-751c2f70aba8016c6e7437c3e490a191 *R/RcppExports.R
+0bedbf5b482e7d72bca5bedf660b8b72 *R/RcppExports.R
 09bc124d9673c8776e787b7e27eac55b *R/Rcpp_doc.R
 04560955f51e69378a318ebbf92b20bd *R/argo2016.R
 0b441fb3540d98445b94767303a3b778 *R/fisher_scoring.R
@@ -29,7 +29,7 @@ e1526671bb9b31885b4bc097fd085d6a *man/L_t_mult.Rd
 67039a34a63b3b70ed065663180e4bbd *man/expit.Rd
 c6de1c79244f56e90ec8e65dab820c1b *man/exponential_anisotropic2D.Rd
 93283512c74afecafe290d9fbac577ee *man/exponential_anisotropic3D.Rd
-5fae876e0ab900b7bfc38b7bc56a6784 *man/exponential_anisotropic3D_alt.Rd
+02042fde66d9b36861413a2c30316a6c *man/exponential_anisotropic3D_alt.Rd
 53d002fb32e9e174642cd9d2df6b587a *man/exponential_isotropic.Rd
 fc7579042e71d0f3b8abb7a0ff0f3dbc *man/exponential_nonstat_var.Rd
 4c48d4f19bc5eb55830958a95a6cd716 *man/exponential_scaledim.Rd
@@ -95,7 +95,7 @@ ca81b52382aba2f5b9b13c96c3c13b00 *man/vecchia_grouped_profbeta_loglik_grad_info.
 4ad8222be6bcc2f1ddcc1ef557bd0a80 *src/basis.h
 c00ce6925256ea3b3d2498a3a49b12a8 *src/covmatrix_funs.h
 af73d938ae8989c42da6e3552ccc6e3e *src/covmatrix_funs_01.h
-7ec8cfbc0ebfad4186afe3de6d001630 *src/covmatrix_funs_02.h
+32b00855f40e229dbe29c8e3960814c9 *src/covmatrix_funs_02.h
 f0f273ccd2622a4351beb8ebcca904a3 *src/covmatrix_funs_03.h
 8dd80a5ddcf9b1c36fa2c5acc580335a *src/covmatrix_funs_04.h
 435330ebaf1fb96cdcefbc5dd4457bf4 *src/covmatrix_funs_05.h
