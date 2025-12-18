@@ -1,7 +1,7 @@
-3b10c993b783fce5ac43d1f9eeb1fff9 *DESCRIPTION
+1739397fdd60ba7702aee96cc39f7b91 *DESCRIPTION
 fbf270ee9b57f3c5e72a9ae7127c19cb *LICENSE
 dda14d48a22c5d8ccb507ea16f15be12 *NAMESPACE
-407e992cf92f9d28551003f85ab63a04 *NEWS.md
+7525fa060cbbf13af4aa1a2bbd382d0d *NEWS.md
 48481d537b026d116c93234850cfd05e *R/GpGp.R
 0bedbf5b482e7d72bca5bedf660b8b72 *R/RcppExports.R
 09bc124d9673c8776e787b7e27eac55b *R/Rcpp_doc.R
@@ -12,7 +12,7 @@ c44726a21e3120ac610764c06e604687 *R/jason3.R
 b77a2abd94348b2040c58a133376babf *R/nearest_neighbor_functions.R
 85b6679ac335c1c39fc905c7d2202959 *R/ordering_functions.R
 05518a8b845d457747bd8598bd600613 *R/penalties.R
-9bee05086e43a5f17637724b1c5e66c8 *R/predictions.R
+ab962628a5dbe4ea78478cb965ac5f1a *R/predictions.R
 f416dc54faf314adeb386994261c5c61 *R/simulation_functions.R
 11d6167c9aa558b3e8c9ac46dfd65817 *README.md
 698e3b2b0c3abba205fa2dd913ca4201 *data/argo2016.RData
@@ -78,7 +78,7 @@ d6211e18f2fdc6d82dad80f0fc03dccb *man/matern_spheretime.Rd
 49252193aeb18479fc3f70ece90d8a9d *man/pen_hi.Rd
 15a73eff965b77bcaafddc1b70aefba9 *man/pen_lo.Rd
 3c6ef31d27eb4de3f7c99f183426c079 *man/pen_loglo.Rd
-d9cc5a6772dc2a4b856ff9196ce6ad06 *man/predictions.Rd
+e75f9615f4a5d72313231393bda8902f *man/predictions.Rd
 50ba627fdad410cc7cdad5f69d79285a *man/sph_grad_xyz.Rd
 128f1e2e9bdaf0db87d734c9b8299b2d *man/summary.GpGp_fit.Rd
 2391bb1594f05c9ca64d7ddcb152113e *man/test_likelihood_object.Rd
@@ -117,4 +117,5 @@ dcdc026a59aa7b5be0198bf4b79e2d46 *tests/testthat/test_1d.R
 b76874cb3a2057edb2518c2104fbbef8 *tests/testthat/test_loglik.R
 4b5c8bd224097cf7239ae088e3441abc *tests/testthat/test_neighbors.R
 925242c608a90e0f1caeb7c9b867af84 *tests/testthat/test_ordering.R
+4135e9043655c371cf922fee6f9ab54c *tests/testthat/test_predictions.R
 b3cf618f21d9909e85ab07e093a5ea62 *tests/testthat/test_proflik.R
